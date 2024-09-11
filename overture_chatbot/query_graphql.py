@@ -22,9 +22,9 @@ def query_graphql(input):
     return str(total)
 
 def query_graphql_chain():
-    
+
     llm = Ollama(model="mistral", temperature=0)
-    
+
     json_prompt = """
     You are a structed output bot. Your task is to take a query and format it into the following JSON schema:
 
@@ -55,12 +55,12 @@ def query_graphql_chain():
     Query: {query}
     >>>
     """
-    
+
     prompt = PromptTemplate(
         template=json_prompt,
         input_variables=["query"]
     )
-    
+
     chain = prompt | llm | query_graphql
 
     return chain
