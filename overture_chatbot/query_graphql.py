@@ -1,7 +1,7 @@
 import json
 from langchain_community.utilities.graphql import GraphQLAPIWrapper
-from langchain_core.prompts import PromptTemplate
 from langchain_community.llms import Ollama
+from langchain_core.prompts import PromptTemplate
 
 def query_graphql(query):
 
