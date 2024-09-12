@@ -3,15 +3,15 @@ from langchain_community.utilities.graphql import GraphQLAPIWrapper
 from langchain_core.prompts import PromptTemplate
 from langchain_community.llms import Ollama
 
-def query_graphql(input):
+def query_graphql(query):
 
-    modified_input = input
+    modified_query = query
     for sqon_keyword in ['fieldName', 'value', 'op', 'content']:
-        modified_input = modified_input.replace(
+        modified_query = modified_query.replace(
             '"'+sqon_keyword+'"', sqon_keyword
         )
 
-    graphql_query = f"{{file{{hits(filters:{modified_input}){{total}}}}}}"
+    graphql_query = f"{{file{{hits(filters:{modified_query}){{total}}}}}}"
 
     graphql = GraphQLAPIWrapper(
         graphql_endpoint="https://arranger.virusseq-dataportal.ca/graphql"
