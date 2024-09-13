@@ -17,3 +17,17 @@ def call_graphql_api(
     response_json = json.loads(response.content)
 
     return response_json
+
+def get_enums(fieldname="analysis__host__host_gender"):
+    
+    json_query = "query{file{aggregations(include_missing:true){"+fieldname+"{buckets{key}}}}}"
+    json_response = call_graphql_api(json_query)
+
+    nested_enums = json_response["data"]["file"]["aggregations"][fieldname]["buckets"]
+
+    enums_list = [
+        single_enum["key"].replace('"', r'\"') 
+        for single_enum in nested_enums
+    ]
+
+    return enums_list
