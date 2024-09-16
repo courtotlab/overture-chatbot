@@ -31,3 +31,14 @@ def get_enums(fieldname="analysis__host__host_gender"):
     ]
 
     return enums_list
+
+def get_fieldinfos():
+    json_query_all = 'query{__type(name: "fileAggregations") {fields {name type{name}}}}'
+    json_response_all = call_graphql_api(json_query_all)
+    fields = json_response_all['data']['__type']['fields']
+
+    fieldsinfo = [
+        {'fieldname': field['name'], 'fieldtype': field['type']['name']}
+        for field in fields
+    ]
+    return fieldsinfo
