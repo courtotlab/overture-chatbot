@@ -42,3 +42,55 @@ def get_fieldinfos():
         for field in fields
     ]
     return fieldsinfo
+
+def create_value_object_schema(fieldname = "", fieldtype = "", description = None):
+
+    if fieldtype == "Aggregations":
+        enums_list0 = get_enums(fieldname)
+        enums_list = repr(enums_list0).replace("'", '"')
+
+        properties_value = (
+            '"value": {'
+                '"type": "array", '
+                '"items": {'
+                    f'"enum": {enums_list}, '
+                    '"type": "string"'
+                '}, '
+                '"minItems": 1'
+            '}'
+        )
+
+    elif fieldtype == "NumericalAggregations":
+        properties_value = (
+            '"value": {'
+                '"type": "integer"'
+            '}'
+        )
+
+    fieldname_periods = fieldname.replace("__", ".")
+
+    if description is None:
+        description = fieldname
+        for r in ("__", "_"):
+            description = description.replace(r, " ")
+
+    properties_fieldname = (
+        '"fieldName": {'
+            f'"const": "{fieldname_periods}", '
+            '"type": "string", '
+            f'"description": "{description}"'
+        '}'
+    )
+
+    value_object = (
+        '{'
+            '"type": "object", '
+            '"required": ["value"], '
+            '"properties": {'
+                f'{properties_fieldname}, '
+                f'{properties_value}'
+            '}'
+        '}'
+    )
+
+    return value_object, description, enums_list0
