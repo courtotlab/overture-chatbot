@@ -2,7 +2,7 @@ import json
 import requests
 
 def call_graphql_api(
-        json_query, url='https://arranger.virusseq-dataportal.ca/graphql'
+    json_query, url='https://arranger.virusseq-dataportal.ca/graphql'
 ):
     headers = {
         'Content-Type': 'application/json',
@@ -43,7 +43,9 @@ def get_fieldinfos():
     ]
     return fieldsinfo
 
-def create_value_object_schema(fieldname = "", fieldtype = "", description = None):
+def create_value_object_schema(
+    fieldname = "", fieldtype = "", description = None
+):
 
     if fieldtype == "Aggregations":
         enums_list0 = get_enums(fieldname)
