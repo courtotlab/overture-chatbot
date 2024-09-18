@@ -96,3 +96,12 @@ def create_value_object_schema(
     )
 
     return value_object, description, enums_list0
+
+def main():
+
+    # documents acts like a 'key' in the vector database
+    documents =[]
+    # metadata acts like a 'value' in the vector database
+    metadatas = []
+
+    fieldinfos = get_fieldinfos()
