@@ -105,3 +105,23 @@ def main():
     metadatas = []
 
     fieldinfos = get_fieldinfos()
+
+    for fieldinfo in fieldinfos:
+        fieldname = fieldinfo['fieldname']
+        fieldtype = fieldinfo['fieldtype']
+
+        json_query = "query{file{aggregations(include_missing:true){"+fieldname+"{buckets{key}}}}}"
+        json_response = call_graphql_api(json_query)
+
+        if 'errors' not in json_response:
+            value_object_schema, description, enums_list = create_value_object_schema(
+                fieldname=fieldname,fieldtype=fieldtype
+            )
+
+            schema = {"schema": value_object_schema}
+
+            documents.append(description)
+            metadatas.append(schema)
+
+            documents.append(repr(enums_list))
+            metadatas.append(schema)
