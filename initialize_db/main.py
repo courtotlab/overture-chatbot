@@ -20,14 +20,25 @@ def call_graphql_api(
     return response_json
 
 def get_enums(fieldname="analysis__host__host_gender"):
-    
+    """Get the enumerated data from a field using GraphQL
+
+    Parameters
+    ----------
+    fieldname : str
+        Field that we wish to obtain enums for
+
+    Returns
+    -------
+    list
+        Each item of list represents the enumerated data for the given field
+    """
     json_query = "query{file{aggregations(include_missing:true){"+fieldname+"{buckets{key}}}}}"
     json_response = call_graphql_api(json_query)
 
     nested_enums = json_response["data"]["file"]["aggregations"][fieldname]["buckets"]
 
     enums_list = [
-        single_enum["key"].replace('"', r'\"') 
+        single_enum["key"].replace('"', r'\"')
         for single_enum in nested_enums
     ]
 
@@ -136,7 +147,7 @@ def main():
 
     chroma_client = chromadb.Client()
 
-    # switch `create_collection` to `get_or_create_collection` 
+    # switch `create_collection` to `get_or_create_collection`
     # to avoid creating a new collection every time
     collection = chroma_client.get_or_create_collection(name="my_collection")
 
