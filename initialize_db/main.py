@@ -159,7 +159,7 @@ def main():
             documents.append(repr(enums_list))
             metadatas.append(schema)
 
-    chroma_client = chromadb.Client()
+    chroma_client = chromadb.PersistentClient(path='../resources/chroma')
 
     # switch `create_collection` to `get_or_create_collection`
     # to avoid creating a new collection every time
