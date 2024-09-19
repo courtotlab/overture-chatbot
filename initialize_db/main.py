@@ -5,6 +5,20 @@ import chromadb
 def call_graphql_api(
     json_query, url='https://arranger.virusseq-dataportal.ca/graphql'
 ):
+    """Create a GraphQL call and return the result
+
+    Parameters
+    ----------
+    json_query : str
+        GraphQL query in JSON
+    url : str
+        URL where the GraphQL query is sent
+
+    Returns
+    -------
+    str
+        GraphQL response in a JSON string
+    """
     headers = {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
