@@ -34,6 +34,13 @@ def get_enums(fieldname="analysis__host__host_gender"):
     return enums_list
 
 def get_fieldinfos():
+    """Get field information (i.e. field type) of project using GraphQL
+
+    Returns
+    -------
+    list of dicts
+        Each item in the list is a dictionary with a 'fieldname' and 'fieldtype' keys
+    """
     json_query_all = 'query{__type(name: "fileAggregations") {fields {name type{name}}}}'
     json_response_all = call_graphql_api(json_query_all)
     fields = json_response_all['data']['__type']['fields']
