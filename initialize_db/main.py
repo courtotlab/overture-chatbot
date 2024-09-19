@@ -1,5 +1,6 @@
 import json
 import requests
+import chromadb
 
 def call_graphql_api(
     json_query, url='https://arranger.virusseq-dataportal.ca/graphql'
@@ -125,3 +126,16 @@ def main():
 
             documents.append(repr(enums_list))
             metadatas.append(schema)
+
+    chroma_client = chromadb.Client()
+
+    # switch `create_collection` to `get_or_create_collection` 
+    # to avoid creating a new collection every time
+    collection = chroma_client.get_or_create_collection(name="my_collection")
+
+    # switch `add` to `upsert` to avoid adding the same documents every time
+    collection.upsert(
+        documents=documents,
+        metadatas=metadatas,
+        ids=["id"+str(i) for i in range(len(documents))]
+    )
