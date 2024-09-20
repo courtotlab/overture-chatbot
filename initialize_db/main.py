@@ -1,6 +1,8 @@
 import json
 import requests
-import chromadb
+from langchain_core.documents import Document
+from langchain_chroma import Chroma
+from langchain_huggingface import HuggingFaceEmbeddings
 
 def call_graphql_api(
     json_query, url='https://arranger.virusseq-dataportal.ca/graphql'
@@ -132,10 +134,8 @@ def create_value_object_schema(
 
 def main():
 
-    # documents acts like a 'key' in the vector database
+    # store information to put into vector database
     documents =[]
-    # metadata acts like a 'value' in the vector database
-    metadatas = []
 
     fieldinfos = get_fieldinfos()
 
@@ -153,21 +153,23 @@ def main():
 
             schema = {"schema": value_object_schema}
 
-            documents.append(description)
-            metadatas.append(schema)
+            documents.append(Document(page_content=description, metadata=schema))
+            documents.append(Document(page_content=repr(enums_list), metadata=schema))
 
-            documents.append(repr(enums_list))
-            metadatas.append(schema)
+    embeddings = HuggingFaceEmbeddings(
+        model_name='all-MiniLM-L6-v2',
+        cache_folder='../resources/huggingface'
+    )
 
-    chroma_client = chromadb.PersistentClient(path='../resources/chroma')
+    # create connection to vector database
+    vector_store = Chroma(
+        collection_name='overture',
+        embedding_function=embeddings,
+        persist_directory='../resources/chroma'
+    )
 
-    # switch `create_collection` to `get_or_create_collection`
-    # to avoid creating a new collection every time
-    collection = chroma_client.get_or_create_collection(name="my_collection")
-
-    # switch `add` to `upsert` to avoid adding the same documents every time
-    collection.upsert(
+    # add data to database
+    vector_store.add_documents(
         documents=documents,
-        metadatas=metadatas,
         ids=["id"+str(i) for i in range(len(documents))]
     )
