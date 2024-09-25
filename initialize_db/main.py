@@ -157,7 +157,7 @@ def main():
             documents.append(Document(page_content=repr(enums_list), metadata=schema))
 
     embeddings = HuggingFaceEmbeddings(
-        model_name='all-MiniLM-L6-v2',
+        model_name='multi-qa-mpnet-base-cos-v1',
         cache_folder='../resources/huggingface'
     )
 
