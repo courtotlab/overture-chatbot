@@ -1,7 +1,10 @@
 import json
+from operator import itemgetter
 from langchain_community.utilities.graphql import GraphQLAPIWrapper
 from langchain_community.llms import Ollama
 from langchain_core.prompts import PromptTemplate
+from langchain_core.output_parsers import StrOutputParser
+from langchain_core.runnables import RunnablePassthrough, RunnableLambda
 
 def query_graphql(query):
 
@@ -61,6 +64,32 @@ def query_graphql_chain():
         input_variables=["query"]
     )
 
-    chain = prompt | llm | query_graphql
+    answer_prompt_template = """
+        Given the following user question, corresponding query, and result, print the Query Result on the first line and answer the user question on the second line.
+                                                 
+        ###
+        Here is an example:
+        Question: Find the number of males in Nova Scotia
+        JSON query schema: {{"op": "and", "content": [{{"op": "in", "content": {{"fieldName": "analysis.host.host_gender", "value": ["Male"]}}}}, {{"op": "in", "content": {{"fieldName": "analysis.sample_collection.sample_collected_by", "value": ["Nova Scotia Health Authority"]}}}}]}}
+        Query result: 3379
+        Answer: There are 3779 males in Nova Scotia.                                     
+        ###
 
-    return chain
+        Question: {query}
+        Query: {query_schema}
+        Query Result: {result}
+        Answer: 
+    """
+    answer_prompt = PromptTemplate(template=answer_prompt_template)
+
+    query_schema_chain = prompt | llm
+    answer_chain = (
+        RunnablePassthrough.assign(query_schema=query_schema_chain).assign(
+            result=itemgetter("query_schema") | RunnableLambda(query_graphql)
+        )
+        | answer_prompt
+        | llm
+        | StrOutputParser()
+    )
+
+    return answer_chain
