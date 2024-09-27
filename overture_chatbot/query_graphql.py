@@ -97,7 +97,7 @@ def query_graphql_chain():
     return answer_chain
 
 def get_keyword_chain():
-    
+
     llm = Ollama(model="mistral", temperature=0)
 
     keyword_prompt = """
@@ -162,21 +162,27 @@ def get_sqon_keyword(keyword_str):
     for kwrd in keyword_lst:
         documents = retriever.invoke(kwrd.strip())
         sqons.extend([doc.metadata['schema'] for doc in documents])
-        
+
     sqons = list(set(sqons))
 
     return sqons
 
 def format_sqons_json(sqons):
-    
+
     json_refs_open = (
-        '{{"type": "object", "required": ["content", "op"], "properties": {{"content": {{"type": "array", "items": {{"oneOf": [{{"$ref": "#/$defs/FieldOperations"}}, {{"$ref": "#"}}]}}, '
-        '"minItems": 1}}, "op": {{"default": "and", "enum": ["and", "or", "not"], "type": "string"}}}}, "$defs": {{"FieldOperations": {{"type": "object", "required": ["content", "op"], '
+        '{{"type": "object", "required": ["content", "op"], "properties": {{"content": '
+        '{{"type": "array", "items": {{"oneOf": [{{"$ref": "#/$defs/FieldOperations"}}, '
+        '{{"$ref": "#"}}]}}, "minItems": 1}}, "op": {{"default": "and", '
+        '"enum": ["and", "or", "not"], "type": "string"}}}}, "$defs": '
+        '{{"FieldOperations": {{"type": "object", "required": ["content", "op"], '
         '"properties": {{"content": {{"type": "array", "items": {{"oneOf": ['
     )
-    json_refs_close = ']}}, "maxItems": 1, "minItems": 1}}, "op": {{"default": "in", "enum": ["in", "<=", ">="], "type": "string"}}}}}}, '
+    json_refs_close = (
+        ']}}, "maxItems": 1, "minItems": 1}}, "op": {{"default": "in", '
+        '"enum": ["in", "<=", ">="], "type": "string"}}}}}}, '
+    )
     schema_close = '}}}}}'
-    
+
     json_refs = ''
     json_defs = ''
     # https://json-schema.org/understanding-json-schema/structuring
