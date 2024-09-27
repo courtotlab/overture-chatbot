@@ -166,3 +166,27 @@ def get_sqon_keyword(keyword_str):
     sqons = list(set(sqons))
 
     return sqons
+
+def format_sqons_json(sqons):
+    
+    json_refs_open = (
+        '{{"type": "object", "required": ["content", "op"], "properties": {{"content": {{"type": "array", "items": {{"oneOf": [{{"$ref": "#/$defs/FieldOperations"}}, {{"$ref": "#"}}]}}, '
+        '"minItems": 1}}, "op": {{"default": "and", "enum": ["and", "or", "not"], "type": "string"}}}}, "$defs": {{"FieldOperations": {{"type": "object", "required": ["content", "op"], '
+        '"properties": {{"content": {{"type": "array", "items": {{"oneOf": ['
+    )
+    json_refs_close = ']}}, "maxItems": 1, "minItems": 1}}, "op": {{"default": "in", "enum": ["in", "<=", ">="], "type": "string"}}}}}}, '
+    schema_close = '}}}}}'
+    
+    json_refs = ''
+    json_defs = ''
+    # https://json-schema.org/understanding-json-schema/structuring
+    for i in range(len(sqons)):
+        json_refs = json_refs + """{{"$ref": "#/$defs/Value""" + str(i) + """"}}"""
+        json_defs = json_defs + """"Value""" + str(i) + '": ' + sqons[i]
+        if i != (len(sqons)-1):
+            json_refs = json_refs + ', '
+            json_defs = json_defs + ', '
+
+    sqon_json = json_refs_open + json_refs + json_refs_close + json_defs + schema_close
+
+    return sqon_json
