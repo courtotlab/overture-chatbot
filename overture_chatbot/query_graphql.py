@@ -93,3 +93,36 @@ def query_graphql_chain():
     )
 
     return answer_chain
+
+def get_keyword_chain():
+    
+    llm = Ollama(model="mistral", temperature=0)
+
+    keyword_prompt = """
+        You are expert English linguist. Extract all the keywords from the given database query.
+
+        Constraints: Limit the number of keywords to a maximum of five. Only include the list of keywords.
+
+        ###
+        Here are some examples:
+
+        Query: Get the number of samples who are not men
+        Response: men
+        Query: Find the number of samples in Labrador not collected from men
+        Response: Labrador, men
+        Query: Get all samples published after 1640926800000
+        Response: 1640926800000
+        ###
+
+        <<<
+        Query: {query}
+        >>>
+    """
+
+    prompt = PromptTemplate(
+        template=keyword_prompt,
+        input_variables=['query']
+    )
+    chain = prompt | llm
+
+    return chain
