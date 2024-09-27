@@ -5,6 +5,8 @@ from langchain_community.llms import Ollama
 from langchain_core.prompts import PromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.runnables import RunnablePassthrough, RunnableLambda
+from langchain_chroma import Chroma
+from langchain_huggingface import HuggingFaceEmbeddings
 
 def query_graphql(query):
 
@@ -126,3 +128,41 @@ def get_keyword_chain():
     chain = prompt | llm
 
     return chain
+
+def get_sqon_keyword(keyword_str):
+    """Get filtering SQONs (as JSON) from a string of keywords
+
+    Parameters
+    ----------
+    keyword_str : str
+        String containing keywords separated by a comma (e.g. 'man, woman')
+
+    Returns
+    -------
+    list[str]
+        List containing strings of filtering SQONs related to keywords
+    """
+    embeddings = HuggingFaceEmbeddings(
+        model_name='multi-qa-mpnet-base-cos-v1',
+        cache_folder='../resources/huggingface'
+    )
+
+    # vector database containing the filtering SQONs
+    vector_store = Chroma(
+        collection_name="overture",
+        embedding_function=embeddings,
+        persist_directory='../resources/chroma'
+    )
+    retriever = vector_store.as_retriever(search_kwargs={"k": 3})
+
+    # separate string into individual keywords
+    keyword_lst = keyword_str.split(', ')
+
+    sqons = []
+    for kwrd in keyword_lst:
+        documents = retriever.invoke(kwrd.strip())
+        sqons.extend([doc.metadata['schema'] for doc in documents])
+        
+    sqons = list(set(sqons))
+
+    return sqons
