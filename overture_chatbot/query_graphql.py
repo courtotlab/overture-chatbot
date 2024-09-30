@@ -167,7 +167,7 @@ def get_sqon_keyword(keyword_str):
 
     return sqons
 
-def format_sqons_json(sqons):
+def format_sqons_schema(sqons):
 
     json_refs_open = (
         '{{"type": "object", "required": ["content", "op"], "properties": {{"content": '
