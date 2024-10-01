@@ -8,15 +8,15 @@ from langchain_core.runnables import RunnablePassthrough, RunnableLambda
 from langchain_chroma import Chroma
 from langchain_huggingface import HuggingFaceEmbeddings
 
-def query_graphql(query):
+def query_graphql(sqon_filters):
 
-    modified_query = query
+    formatted_sqon_filters = sqon_filters
     for sqon_keyword in ['fieldName', 'value', 'op', 'content']:
-        modified_query = modified_query.replace(
+        formatted_sqon_filters = formatted_sqon_filters.replace(
             '"'+sqon_keyword+'"', sqon_keyword
         )
 
-    graphql_query = f"{{file{{hits(filters:{modified_query}){{total}}}}}}"
+    graphql_query = f"{{file{{hits(filters:{formatted_sqon_filters}){{total}}}}}}"
 
     graphql = GraphQLAPIWrapper(
         graphql_endpoint="https://arranger.virusseq-dataportal.ca/graphql"
