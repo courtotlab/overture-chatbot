@@ -8,13 +8,19 @@ from langchain_core.runnables import RunnablePassthrough, RunnableLambda
 from langchain_chroma import Chroma
 from langchain_huggingface import HuggingFaceEmbeddings
 
-def query_graphql(sqon_filters):
 
-    formatted_sqon_filters = sqon_filters
+def format_sqon_filters(sqon_filters):
+    modified_filters = sqon_filters.replace("'", '"')
     for sqon_keyword in ['fieldName', 'value', 'op', 'content']:
-        formatted_sqon_filters = formatted_sqon_filters.replace(
+        modified_filters = modified_filters.replace(
             '"'+sqon_keyword+'"', sqon_keyword
         )
+
+    return modified_filters
+
+def query_graphql(sqon_filters):
+
+    formatted_sqon_filters = format_sqon_filters(sqon_filters)
 
     graphql_query = f"{{file{{hits(filters:{formatted_sqon_filters}){{total}}}}}}"
 
