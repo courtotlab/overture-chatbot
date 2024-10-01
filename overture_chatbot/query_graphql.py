@@ -196,3 +196,52 @@ def format_sqons_schema(sqons):
     sqon_json = json_refs_open + json_refs + json_refs_close + json_defs + schema_close
 
     return sqon_json
+
+def create_sqon_schema():
+    llm = Ollama(model="mistral-nemo", temperature=0)
+    sqon_prompt = """
+        You are a structured output bot. Your task is to take a query and format it into the following JSON schema:
+
+        {schema}
+
+        Make sure to check for common mistakes, including:
+        - Respect the 'maxItems' and 'minItems' value
+        - Only include the value if it is in the list following the "enum" keyward.
+
+        You must response with the single line JSON object without explaination or notes.
+
+        ###
+        Here are some examples:
+
+        Query: Filter for males in the database
+        Response: {{'op': 'and', 'content': [{{'op': 'in', 'content': {{'fieldName': 'analysis.host.host_gender', 'value': ['Male']}}}}]}}
+        Query: Get the number of samples who are not men
+        Response: {{'op': 'not', 'content': [{{'op': 'in', 'content': {{'fieldName': 'analysis.host.host_gender', 'value': ['Male']}}}}]}}
+        Query: Find the number of samples in Labrador not collected from men
+        Response: {{'op': 'and', 'content': [{{'op': 'in', 'content': {{'fieldName': 'analysis.sample_collection.sample_collected_by', 'value': ['Newfoundland and Labrador - Eastern Health']}}}}, {{'op': 'not', 'content': [{{'op': 'in', 'content': {{'fieldName': 'analysis.host.host_gender', 'value': ['Male']}}}}]}}]}}
+        Query: Get all samples published after 1640926800000
+        Response: {{"op": "and", "content": [{{"op": ">=", "content": {{"fieldName": "analysis.first_published_at", "value": 1640926800000}}}}]}}
+        ###
+
+        <<<
+        Query: {query}
+        >>>
+    """
+
+    sqon_prompt = PromptTemplate(
+        template=sqon_prompt,
+        input_variables=["schema", "query"]
+    )
+        
+    sqon_schema_chain = get_keyword_chain() | get_sqon_keyword | format_sqons_schema
+    
+    sqon_chain = (
+        {
+            "schema": sqon_schema_chain,
+            "query": RunnablePassthrough()
+        }
+        | sqon_prompt
+        | llm
+    )
+
+    return sqon_chain
