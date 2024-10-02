@@ -9,6 +9,11 @@ from langchain_chroma import Chroma
 from langchain_huggingface import HuggingFaceEmbeddings
 
 
+def query_total_chain():
+    query_total = create_sqon_schema() | format_sqon_filters | get_total_graphql
+
+    return query_total
+
 def format_sqon_filters(sqon_filters):
     modified_filters = sqon_filters.replace("'", '"')
     for sqon_keyword in ['fieldName', 'value', 'op', 'content']:
