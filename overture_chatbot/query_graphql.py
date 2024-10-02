@@ -20,16 +20,18 @@ def format_sqon_filters(sqon_filters):
 
 def query_graphql(sqon_filters):
 
-    formatted_sqon_filters = format_sqon_filters(sqon_filters)
-
-    graphql_query = f"{{file{{hits(filters:{formatted_sqon_filters}){{total}}}}}}"
+    graphql_query = f"{{file{{hits(filters:{sqon_filters}){{total}}}}}}"
 
     graphql = GraphQLAPIWrapper(
         graphql_endpoint="https://arranger.virusseq-dataportal.ca/graphql"
     )
     response = graphql.run(query=graphql_query)
-    total = json.loads(response)['file']['hits']['total']
 
+    return response
+
+def get_total_graphql(sqon_filters):
+    json_response = query_graphql(sqon_filters)
+    total = json.loads(json_response)['file']['hits']['total']
     return str(total)
 
 def query_graphql_chain():
