@@ -109,8 +109,22 @@ def query_graphql(sqon_filters):
     return response
 
 def get_total_graphql(sqon_filters):
+    """Get the total number of records in Arranger (via GraphQL) based on the SQON filters
+
+    Parameters
+    ----------
+    sqon_filters : str
+        Representation of Serializable Query Object Notation (SQON) 
+        filters that are passed to the GraphQL query.
+
+    Returns
+    -------
+    str of integer
+        Total number of records in Arranger database that correspond to SQON filters.
+    """
     json_response = query_graphql(sqon_filters)
     total = json.loads(json_response)['file']['hits']['total']
+
     return str(total)
 
 def get_keyword_chain():
