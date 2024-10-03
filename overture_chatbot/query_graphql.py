@@ -10,6 +10,20 @@ from langchain_huggingface import HuggingFaceEmbeddings
 
 
 def query_total_chain():
+    """Create a Langchain LCEL chain that returns the total number of records from unstructured text
+
+    Returns
+    -------
+    langchain_core.runnables.base.RunnableSequence
+        Langchain chain that will return total number of records from unstructured text.
+
+    Notes
+    -----
+    The difference between query_total_chain() and query_total_summary_chain() is that 
+    query_total_chain() returns only the number (i.e. 5) and query_total_summary_chain()
+    returns the number as a summary (i.e. There are 5 records that match your criteria 
+    of X, Y, and Z).
+    """
     query_total = create_sqon_schema() | format_sqon_filters | get_total_graphql
 
     return query_total
