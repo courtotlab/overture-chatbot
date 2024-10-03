@@ -206,7 +206,23 @@ def get_sqon_keyword(keyword_str):
     return sqons
 
 def format_sqons_schema(sqons):
+    """Integrate SQONs into JSON schema
 
+    Parameters
+    ----------
+    sqons : list of str
+        SQONs to be incorporated into JSON schema.
+
+    Returns
+    -------
+    str
+        JSON schema (represented by a string) for SQONs.
+
+    Notes
+    -----
+    More information about JSON schemas can be found at 
+    https://json-schema.org/understanding-json-schema/structuring.
+    """
     json_refs_open = (
         '{{"type": "object", "required": ["content", "op"], "properties": {{"content": '
         '{{"type": "array", "items": {{"oneOf": [{{"$ref": "#/$defs/FieldOperations"}}, '
@@ -223,7 +239,6 @@ def format_sqons_schema(sqons):
 
     json_refs = ''
     json_defs = ''
-    # https://json-schema.org/understanding-json-schema/structuring
     for i in range(len(sqons)):
         json_refs = json_refs + """{{"$ref": "#/$defs/Value""" + str(i) + """"}}"""
         json_defs = json_defs + """"Value""" + str(i) + '": ' + sqons[i]
