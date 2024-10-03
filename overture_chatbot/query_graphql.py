@@ -56,6 +56,19 @@ def query_total_summary_chain():
     return answer_chain
 
 def summarize_answer():
+    """Create a Langchain LCEL chain that summarizes answer
+
+    Chain will create a summary of the results given the query, query schema, and result.
+
+    Returns
+    -------
+    langchain_core.runnables.base.RunnableSequence
+        Langchain chain that summarizes the total number of records from unstructured text.
+
+    See Also
+    --------
+    query_total_summary_chain
+    """
     llm = Ollama(model="mistral", temperature=0)
 
     answer_prompt_template = """
