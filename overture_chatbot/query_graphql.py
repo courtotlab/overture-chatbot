@@ -169,7 +169,13 @@ def get_total_graphql(sqon_filters):
     return str(total)
 
 def get_keyword_chain():
+    """Create a Langchain LCEL chain that returns keywords extracted from unstructured text
 
+    Returns
+    -------
+    langchain_core.runnables.base.RunnableSequence
+        Langchain chain that will keywords extracted from unstructured text.
+    """
     llm = Ollama(model="mistral", temperature=0)
 
     keyword_prompt = """
