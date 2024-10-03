@@ -147,17 +147,24 @@ def get_keyword_chain():
     return chain
 
 def get_sqon_keyword(keyword_str):
-    """Get filtering SQONs (as JSON) from a string of keywords
+    """Get SQONs (as JSON) from a keyword
+
+    Given a keyword, this function will query a vector store to retrieve 
+    and return the related SQONs.
 
     Parameters
     ----------
     keyword_str : str
-        String containing keywords separated by a comma (e.g. 'man, woman')
+        String containing keywords separated by a comma (e.g. 'man, woman').
 
     Returns
     -------
-    list[str]
-        List containing strings of filtering SQONs related to keywords
+    list of str
+        List containing strings of filtering SQONs related to keywords.
+
+    See Also
+    --------
+    initialize_db.main.main: Function to initialize vector store.
     """
     embeddings = HuggingFaceEmbeddings(
         model_name='multi-qa-mpnet-base-cos-v1',
