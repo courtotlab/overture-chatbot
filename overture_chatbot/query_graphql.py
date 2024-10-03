@@ -63,6 +63,25 @@ def format_sqon_filters(sqon_filters):
     return modified_filters
 
 def query_graphql(sqon_filters):
+    """Query GraphQL endpoint with SQON filters
+
+    Parameters
+    ----------
+    sqon_filters : str
+        Representation of Serializable Query Object Notation (SQON) 
+        filters that are passed to the GraphQL query
+
+    Returns
+    -------
+    JSON as str
+        Response from GraphQL query
+
+    Notes
+    -----
+    Information about SQON filter notation can be found at Overtures website 
+    (https://www.overture.bio/documentation/arranger/reference/sqon/)
+    
+    """
 
     graphql_query = f"{{file{{hits(filters:{sqon_filters}){{total}}}}}}"
 
