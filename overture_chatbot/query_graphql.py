@@ -54,6 +54,22 @@ def summarize_answer():
 
 
 def format_sqon_filters(sqon_filters):
+    """Format string into SQON format
+
+    String from LLM may need to be slightly modified to be used 
+    in a GraphQL query (i.e. single vs double quotes).
+
+    Parameters
+    ----------
+    sqon_filters : str
+        Raw Serializable Query Object Notation (SQON) 
+        that need to be modified.
+
+    Returns
+    -------
+    str
+        String representation of SQON with quotes modified.
+    """
     modified_filters = sqon_filters.replace("'", '"')
     for sqon_keyword in ['fieldName', 'value', 'op', 'content']:
         modified_filters = modified_filters.replace(
