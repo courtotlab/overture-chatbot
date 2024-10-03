@@ -24,12 +24,12 @@ def query_total_summary_chain():
         | summarize_answer()
         | StrOutputParser()
     )
-    
+
     return answer_chain
 
 def summarize_answer():
     llm = Ollama(model="mistral", temperature=0)
-    
+
     answer_prompt_template = """
         Given the following user question, corresponding query, and result, print the Query Result on the first line and answer the user question on the second line.
                                                  
@@ -214,9 +214,9 @@ def create_sqon_schema():
         template=sqon_prompt,
         input_variables=["schema", "query"]
     )
-        
+
     sqon_schema_chain = get_keyword_chain() | get_sqon_keyword | format_sqons_schema
-    
+
     sqon_chain = (
         {
             "schema": sqon_schema_chain,
