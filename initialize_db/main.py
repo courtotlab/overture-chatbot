@@ -12,14 +12,14 @@ def call_graphql_api(
     Parameters
     ----------
     json_query : str
-        GraphQL query in JSON
+        GraphQL query in JSON.
     url : str
-        URL where the GraphQL query is sent
+        URL where the GraphQL query is sent.
 
     Returns
     -------
     str
-        GraphQL response in a JSON string
+        GraphQL response in a JSON string.
     """
     headers = {
         'Content-Type': 'application/json',
@@ -41,12 +41,12 @@ def get_enums(fieldname="analysis__host__host_gender"):
     Parameters
     ----------
     fieldname : str
-        Field that we wish to obtain enums for
+        Field that we wish to obtain enums for.
 
     Returns
     -------
     list
-        Each item of list represents the enumerated data for the given field
+        Each item of list represents the enumerated data for the given field.
     """
     json_query = "query{file{aggregations(include_missing:true){"+fieldname+"{buckets{key}}}}}"
     json_response = call_graphql_api(json_query)
@@ -66,7 +66,7 @@ def get_fieldinfos():
     Returns
     -------
     list of dicts
-        Each item in the list is a dictionary with a 'fieldname' and 'fieldtype' keys
+        Each item in the list is a dictionary with a 'fieldname' and 'fieldtype' keys.
     """
     json_query_all = 'query{__type(name: "fileAggregations") {fields {name type{name}}}}'
     json_response_all = call_graphql_api(json_query_all)
