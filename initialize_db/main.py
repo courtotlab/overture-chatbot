@@ -79,8 +79,29 @@ def get_fieldinfos():
     return fieldsinfo
 
 def create_value_object_schema(
-    fieldname = "", fieldtype = "", description = None
+    fieldname, fieldtype, description = None
 ):
+    """Create SQON value object and description of field name
+
+    Parameters
+    ----------
+    fieldname : str
+        Name of field of interest.
+    fieldtype : str
+        Data type (Aggregations or NumericalAggregations) of fieldname.
+    description : str, optional
+        Short description of the field associated with fieldname, by default None.
+
+    Returns
+    -------
+    value_object : str
+        JSON representation of a SQON value object.
+    description : str
+        Short description of the field associated with fieldname. If no description 
+        is initially provided, the file name will be parsed and used as the description.
+    enums_list : list of str
+        List of enumerations assoicated with filename.
+    """
 
     if fieldtype == "Aggregations":
         enums_list0 = get_enums(fieldname)
