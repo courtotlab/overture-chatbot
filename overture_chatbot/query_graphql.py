@@ -298,6 +298,18 @@ def format_sqons_schema(sqons):
     return sqon_json
 
 def create_sqon_schema():
+    """Create a Langchain LCEL chain that creates SQON prompt from unstructured text
+
+    Returns
+    -------
+    langchain_core.runnables.base.RunnableSequence
+        Langchain chain that creates SQON prompt from unstructured text.
+
+    See Also
+    --------
+    query_total_summary_chain
+    query_total_chain
+    """
     llm = Ollama(model="mistral-nemo", temperature=0)
     sqon_prompt = """
         You are a structured output bot. Your task is to take a query and format it into the following JSON schema:
