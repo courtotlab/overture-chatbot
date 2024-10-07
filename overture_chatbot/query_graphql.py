@@ -69,7 +69,7 @@ def summarize_answer():
     --------
     query_total_summary_chain
     """
-    llm = Ollama(model="mistral", temperature=0)
+    llm = Ollama(model="mistral-nemo", temperature=0)
 
     answer_prompt_template = """
         Given the following user question, corresponding query, and result, print the Query Result on the first line and answer the user question on the second line.
@@ -176,7 +176,7 @@ def get_keyword_chain():
     langchain_core.runnables.base.RunnableSequence
         Langchain chain that will keywords extracted from unstructured text.
     """
-    llm = Ollama(model="mistral", temperature=0)
+    llm = Ollama(model="mistral-nemo", temperature=0)
 
     keyword_prompt = """
         You are expert English linguist. Extract all the keywords from the given database query.
