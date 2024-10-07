@@ -22,3 +22,16 @@ def test_format_sqon_filters(
     actual_result = overture_chatbot.query_graphql.format_sqon_filters(sqon_filter_str_1)
 
     assert actual_result == expected_format_sqon_filters_1
+
+def test_get_total_graphql(monkeypatch):
+    sqon_filters = ''
+    expected_get_total_graphql = '100'
+    
+    def mock_query_graphql(sqon_filters):
+        result = '{"file": {"hits": {"total": 100}}}'
+        return result
+    monkeypatch.setattr(overture_chatbot.query_graphql, 'query_graphql', mock_query_graphql)
+
+    actual_result = overture_chatbot.query_graphql.get_total_graphql(sqon_filters)
+
+    assert actual_result == expected_get_total_graphql
