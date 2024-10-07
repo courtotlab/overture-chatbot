@@ -35,3 +35,12 @@ def test_get_total_graphql(monkeypatch):
     actual_result = overture_chatbot.query_graphql.get_total_graphql(sqon_filters)
 
     assert actual_result == expected_get_total_graphql
+
+def test_get_keyword_chain():
+    query = 'Find the number of samples in Labrador not collected from men'
+    expected_get_keyword_chain = 'Labrador, men'
+
+    chain = overture_chatbot.query_graphql.get_keyword_chain()
+    actual_result = chain.invoke({'query': query})
+
+    assert actual_result == expected_get_keyword_chain
