@@ -53,3 +53,11 @@ def test_create_sqon_schema():
     actual_result = chain.invoke({'query': query})
 
     assert actual_result == expected_create_sqon_schema
+
+def test_query_graphql():
+    sqon_filter = '{op: "and", content: [{op: "in", content: {fieldName: "analysis.host.host_gender", value: ["Male"]}}]}'
+    expected_query_graphql = '{\n  "file": {\n    "hits": {\n      "total": 207094\n    }\n  }\n}'
+
+    actual_result = overture_chatbot.query_graphql.query_graphql(sqon_filter)
+
+    assert actual_result == expected_query_graphql
