@@ -26,7 +26,7 @@ def test_format_sqon_filters(
 def test_get_total_graphql(monkeypatch):
     sqon_filters = ''
     expected_get_total_graphql = '100'
-    
+
     def mock_query_graphql(sqon_filters):
         result = '{"file": {"hits": {"total": 100}}}'
         return result
