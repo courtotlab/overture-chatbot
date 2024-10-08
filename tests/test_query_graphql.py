@@ -44,3 +44,12 @@ def test_get_keyword_chain():
     actual_result = chain.invoke({'query': query})
 
     assert actual_result == expected_get_keyword_chain
+
+def test_create_sqon_schema():
+    query = "Filter for males in the database"
+    expected_create_sqon_schema = "{'op': 'and', 'content': [{'op': 'in', 'content': {'fieldName': 'analysis.host.host_gender', 'value': ['Male']}}]}"
+
+    chain = overture_chatbot.query_graphql.create_sqon_schema()
+    actual_result = chain.invoke({'query': query})
+
+    assert actual_result == expected_create_sqon_schema
