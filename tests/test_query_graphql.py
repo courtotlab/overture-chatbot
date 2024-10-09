@@ -134,3 +134,23 @@ def test_format_sqons_schema(
     actual_result = overture_chatbot.query_graphql.format_sqons_schema(sqons_2)
 
     assert actual_result == expected_sqons_schema_2
+
+param_query_total_chain = [
+    (
+        'Find the number of males',
+        '207094'
+    )
+]
+
+@pytest.mark.parametrize(
+    'query_3, expected_result_3',
+    param_query_total_chain
+)
+
+def test_query_total_chain(
+    query_3, expected_result_3
+):
+    chain = overture_chatbot.query_graphql.query_total_chain()
+    actual_result = chain.invoke(query_3)
+
+    assert actual_result == expected_result_3
