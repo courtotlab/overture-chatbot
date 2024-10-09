@@ -85,6 +85,42 @@ param_format_sqon_schema = [
             '}}}}}'
         )
     ),
+    (
+        ['A'],
+        (
+            '{{"type": "object", "required": ["content", "op"], "properties": {{"content": '
+            '{{"type": "array", "items": {{"oneOf": [{{"$ref": "#/$defs/FieldOperations"}}, '
+            '{{"$ref": "#"}}]}}, "minItems": 1}}, "op": {{"default": "and", '
+            '"enum": ["and", "or", "not"], "type": "string"}}}}, "$defs": '
+            '{{"FieldOperations": {{"type": "object", "required": ["content", "op"], '
+            '"properties": {{"content": {{"type": "array", "items": {{"oneOf": ['
+            """{{"$ref": "#/$defs/Value""" + str(0) + """"}}"""
+            ']}}, "maxItems": 1, "minItems": 1}}, "op": {{"default": "in", '
+            '"enum": ["in", "<=", ">="], "type": "string"}}}}}}, '
+            """"Value""" + str(0) + '": ' + 'A'
+            '}}}}}'
+        )
+    ),
+    (
+        ['A', 'B', 'C'],
+        (
+            '{{"type": "object", "required": ["content", "op"], "properties": {{"content": '
+            '{{"type": "array", "items": {{"oneOf": [{{"$ref": "#/$defs/FieldOperations"}}, '
+            '{{"$ref": "#"}}]}}, "minItems": 1}}, "op": {{"default": "and", '
+            '"enum": ["and", "or", "not"], "type": "string"}}}}, "$defs": '
+            '{{"FieldOperations": {{"type": "object", "required": ["content", "op"], '
+            '"properties": {{"content": {{"type": "array", "items": {{"oneOf": ['
+            """{{"$ref": "#/$defs/Value""" + str(0) + """"}}""" + ', '
+            """{{"$ref": "#/$defs/Value""" + str(1) + """"}}""" + ', '
+            """{{"$ref": "#/$defs/Value""" + str(2) + """"}}"""
+            ']}}, "maxItems": 1, "minItems": 1}}, "op": {{"default": "in", '
+            '"enum": ["in", "<=", ">="], "type": "string"}}}}}}, '
+            """"Value""" + str(0) + '": ' + 'A' + ', '
+            """"Value""" + str(1) + '": ' + 'B' + ', '
+            """"Value""" + str(2) + '": ' + 'C'
+            '}}}}}'
+        )
+    ),
 ]
 
 @pytest.mark.parametrize(
