@@ -67,3 +67,34 @@ def test_query_graphql():
     actual_result = overture_chatbot.query_graphql.query_graphql(sqon_filter)
 
     assert actual_result == expected_query_graphql
+
+param_format_sqon_schema = [
+    (
+        [],
+        (
+            '{{"type": "object", "required": ["content", "op"], "properties": {{"content": '
+            '{{"type": "array", "items": {{"oneOf": [{{"$ref": "#/$defs/FieldOperations"}}, '
+            '{{"$ref": "#"}}]}}, "minItems": 1}}, "op": {{"default": "and", '
+            '"enum": ["and", "or", "not"], "type": "string"}}}}, "$defs": '
+            '{{"FieldOperations": {{"type": "object", "required": ["content", "op"], '
+            '"properties": {{"content": {{"type": "array", "items": {{"oneOf": ['
+            ''
+            ']}}, "maxItems": 1, "minItems": 1}}, "op": {{"default": "in", '
+            '"enum": ["in", "<=", ">="], "type": "string"}}}}}}, '
+            ''
+            '}}}}}'
+        )
+    ),
+]
+
+@pytest.mark.parametrize(
+    'sqons_2, expected_sqons_schema_2', 
+    param_format_sqon_schema
+)
+
+def test_format_sqons_schema(
+    sqons_2, expected_sqons_schema_2
+):
+    actual_result = overture_chatbot.query_graphql.format_sqons_schema(sqons_2)
+
+    assert actual_result == expected_sqons_schema_2
