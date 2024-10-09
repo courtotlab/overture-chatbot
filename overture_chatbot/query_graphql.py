@@ -8,6 +8,18 @@ from langchain_core.runnables import RunnablePassthrough, RunnableLambda
 from langchain_chroma import Chroma
 from langchain_huggingface import HuggingFaceEmbeddings
 
+llm = Ollama(model="mistral-nemo", temperature=0)
+embeddings = HuggingFaceEmbeddings(
+        model_name='multi-qa-mpnet-base-cos-v1',
+        cache_folder='../resources/huggingface'
+    )
+
+# vector database containing the filtering SQONs
+vector_store = Chroma(
+    collection_name="overture",
+    embedding_function=embeddings,
+    persist_directory='../resources/chroma'
+)
 
 def query_total_chain():
     """Create a Langchain LCEL chain that returns the total number of records from unstructured text
@@ -69,8 +81,6 @@ def summarize_answer():
     --------
     query_total_summary_chain
     """
-    llm = Ollama(model="mistral-nemo", temperature=0)
-
     answer_prompt_template = """
         Given the following user question, corresponding query, and result, print the Query Result on the first line and answer the user question on the second line.
                                                  
@@ -176,8 +186,6 @@ def get_keyword_chain():
     langchain_core.runnables.base.RunnableSequence
         Langchain chain that will keywords extracted from unstructured text.
     """
-    llm = Ollama(model="mistral-nemo", temperature=0)
-
     keyword_prompt = """
         You are expert English linguist. Extract all the keywords from the given database query.
 
@@ -227,17 +235,6 @@ def get_sqon_keyword(keyword_str):
     --------
     initialize_db.main.main: Function to initialize vector store.
     """
-    embeddings = HuggingFaceEmbeddings(
-        model_name='multi-qa-mpnet-base-cos-v1',
-        cache_folder='../resources/huggingface'
-    )
-
-    # vector database containing the filtering SQONs
-    vector_store = Chroma(
-        collection_name="overture",
-        embedding_function=embeddings,
-        persist_directory='../resources/chroma'
-    )
     retriever = vector_store.as_retriever(search_kwargs={"k": 3})
 
     # separate string into individual keywords
@@ -310,7 +307,6 @@ def create_sqon_schema():
     query_total_summary_chain
     query_total_chain
     """
-    llm = Ollama(model="mistral-nemo", temperature=0)
     sqon_prompt = """
         You are a structured output bot. Your task is to take a query and format it into the following JSON schema:
 
