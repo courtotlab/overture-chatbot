@@ -51,6 +51,31 @@ param_create_value_object_schema = [
                 'Missing', 'Unknown', 'Undeclared'
             ]
         )
+    ),
+    # change enums
+    (
+        'analysis__host__host_gender',
+        'Aggregations',
+        None,
+        [
+            'Female', 'Male', 'Not Provided', 'Restricted Access',
+            'Missing', 'Unknown'
+        ],
+        (
+            (
+                '{"type": "object", "required": ["value"], "properties": {"fieldName": {"const": '
+                '"analysis.host.host_gender", "type": "string", "description": '
+                '"analysis host host gender"}, "value": {"type": "array", "items": {"enum": ['
+                '"Female", "Male", "Not Provided", "Restricted Access", '
+                '"Missing", "Unknown"'
+                '], "type": "string"}, "minItems": 1}}}'
+            ),
+            'analysis host host gender',
+            [
+                'Female', 'Male', 'Not Provided', 'Restricted Access',
+                'Missing', 'Unknown'
+            ]
+        )
     )
 ]
 
