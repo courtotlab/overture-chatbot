@@ -283,10 +283,10 @@ def format_sqons_schema(sqons):
 
     json_refs = ''
     json_defs = ''
-    for i in range(len(sqons)):
-        json_refs = json_refs + """{{"$ref": "#/$defs/Value""" + str(i) + """"}}"""
-        json_defs = json_defs + """"Value""" + str(i) + '": ' + sqons[i]
-        if i != (len(sqons)-1):
+    for count, value in enumerate(sqons):
+        json_refs = json_refs + """{{"$ref": "#/$defs/Value""" + str(count) + """"}}"""
+        json_defs = json_defs + """"Value""" + str(count) + '": ' + value
+        if count != (len(sqons)-1):
             json_refs = json_refs + ', '
             json_defs = json_defs + ', '
 
