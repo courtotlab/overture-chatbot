@@ -104,14 +104,14 @@ def create_value_object_schema(
     """
 
     if fieldtype == "Aggregations":
-        enums_list0 = get_enums(fieldname)
-        enums_list = repr(enums_list0).replace("'", '"')
+        enums_list = get_enums(fieldname)
+        mod_enums_list = repr(enums_list).replace("'", '"')
 
         properties_value = (
             '"value": {'
                 '"type": "array", '
                 '"items": {'
-                    f'"enum": {enums_list}, '
+                    f'"enum": {mod_enums_list}, '
                     '"type": "string"'
                 '}, '
                 '"minItems": 1'
@@ -151,7 +151,7 @@ def create_value_object_schema(
         '}'
     )
 
-    return value_object, description, enums_list0
+    return value_object, description, enums_list
 
 def main():
 
