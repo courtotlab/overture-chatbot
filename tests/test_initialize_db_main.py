@@ -1,3 +1,5 @@
+"""Tests for initialize_db.main"""
+
 import pytest
 import initialize_db.main
 
@@ -129,6 +131,7 @@ def test_create_value_object_schema(
     fieldname_1, fieldtype_1, description_1,
     get_enums_1, expected_result_1, monkeypatch
 ):
+    """Test for initialize_db.main.create_value_object_schema"""
     def mock_get_enums(fieldname):
         return get_enums_1
     monkeypatch.setattr(
