@@ -55,6 +55,42 @@ def query_total_summary_chain():
     returns the number as a summary (i.e. There are 5 records that match your criteria 
     of X, Y, and Z).
     """
+    def summarize_answer():
+        """Create a Langchain LCEL chain that summarizes answer
+
+        Chain will create a summary of the results given the query, query schema, and result.
+
+        Returns
+        -------
+        langchain_core.runnables.base.RunnableSequence
+            Langchain chain that summarizes the total number of records from unstructured text.
+
+        See Also
+        --------
+        query_total_summary_chain
+        """
+        answer_prompt_template = """
+            Given the following user question, corresponding query, and result, print the Query Result on the first line and answer the user question on the second line.
+                                                    
+            ###
+            Here is an example:
+            Question: Find the number of males in Nova Scotia
+            JSON query schema: {{"op": "and", "content": [{{"op": "in", "content": {{"fieldName": "analysis.host.host_gender", "value": ["Male"]}}}}, {{"op": "in", "content": {{"fieldName": "analysis.sample_collection.sample_collected_by", "value": ["Nova Scotia Health Authority"]}}}}]}}
+            Query result: 3379
+            Answer: There are 3779 males in Nova Scotia.                                     
+            ###
+
+            Question: {query}
+            Query: {query_schema}
+            Query Result: {result}
+            Answer: 
+        """
+        answer_prompt = PromptTemplate(template=answer_prompt_template)
+
+        answer_chain = answer_prompt | llm
+
+        return answer_chain
+    
     query_schema_chain = create_sqon_schema() | format_sqon_filters
 
     answer_chain = (
@@ -66,43 +102,6 @@ def query_total_summary_chain():
     )
 
     return answer_chain
-
-def summarize_answer():
-    """Create a Langchain LCEL chain that summarizes answer
-
-    Chain will create a summary of the results given the query, query schema, and result.
-
-    Returns
-    -------
-    langchain_core.runnables.base.RunnableSequence
-        Langchain chain that summarizes the total number of records from unstructured text.
-
-    See Also
-    --------
-    query_total_summary_chain
-    """
-    answer_prompt_template = """
-        Given the following user question, corresponding query, and result, print the Query Result on the first line and answer the user question on the second line.
-                                                 
-        ###
-        Here is an example:
-        Question: Find the number of males in Nova Scotia
-        JSON query schema: {{"op": "and", "content": [{{"op": "in", "content": {{"fieldName": "analysis.host.host_gender", "value": ["Male"]}}}}, {{"op": "in", "content": {{"fieldName": "analysis.sample_collection.sample_collected_by", "value": ["Nova Scotia Health Authority"]}}}}]}}
-        Query result: 3379
-        Answer: There are 3779 males in Nova Scotia.                                     
-        ###
-
-        Question: {query}
-        Query: {query_schema}
-        Query Result: {result}
-        Answer: 
-    """
-    answer_prompt = PromptTemplate(template=answer_prompt_template)
-
-    answer_chain = answer_prompt | llm
-
-    return answer_chain
-
 
 def format_sqon_filters(sqon_filters):
     """Format string into SQON format
