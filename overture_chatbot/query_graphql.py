@@ -1,14 +1,14 @@
 import json
 from operator import itemgetter
 from langchain_community.utilities.graphql import GraphQLAPIWrapper
-from langchain_community.llms import Ollama
+from langchain_ollama import OllamaLLM
 from langchain_core.prompts import PromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.runnables import RunnablePassthrough, RunnableLambda
 from langchain_chroma import Chroma
 from langchain_huggingface import HuggingFaceEmbeddings
 
-llm = Ollama(model="mistral-nemo", temperature=0)
+llm = OllamaLLM(model="mistral-nemo", temperature=0)
 embeddings = HuggingFaceEmbeddings(
         model_name='multi-qa-mpnet-base-cos-v1',
         cache_folder='../resources/huggingface'
