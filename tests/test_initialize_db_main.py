@@ -26,6 +26,31 @@ param_create_value_object_schema = [
                 'Missing', 'Unknown', 'Undeclared'
             ]
         )
+    ),
+    # add description to baseline
+    (
+        'analysis__host__host_gender',
+        'Aggregations',
+        'test description',
+        [
+            'Female', 'Male', 'Not Provided', 'Restricted Access',
+            'Missing', 'Unknown', 'Undeclared'
+        ],
+        (
+            (
+                '{"type": "object", "required": ["value"], "properties": {"fieldName": {"const": '
+                '"analysis.host.host_gender", "type": "string", "description": '
+                '"test description"}, "value": {"type": "array", "items": {"enum": ['
+                '"Female", "Male", "Not Provided", "Restricted Access", '
+                '"Missing", "Unknown", "Undeclared"'
+                '], "type": "string"}, "minItems": 1}}}'
+            ),
+            'test description',
+            [
+                'Female', 'Male', 'Not Provided', 'Restricted Access',
+                'Missing', 'Unknown', 'Undeclared'
+            ]
+        )
     )
 ]
 
