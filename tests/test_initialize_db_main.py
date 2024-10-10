@@ -76,6 +76,22 @@ param_create_value_object_schema = [
                 'Missing', 'Unknown'
             ]
         )
+    ),
+    # test NumericalAggregations fieldtype
+    (
+        'analysis__host__host_gender',
+        'NumericalAggregations',
+        None,
+        [],
+        (
+            (
+                '{"type": "object", "required": ["value"], "properties": {"fieldName": {"const": '
+                '"analysis.host.host_gender", "type": "string", "description": '
+                '"analysis host host gender"}, "value": {"type": "integer"}}}'
+            ),
+            'analysis host host gender',
+            []
+        )
     )
 ]
 
