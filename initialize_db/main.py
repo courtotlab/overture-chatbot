@@ -197,3 +197,6 @@ def main():
         documents=documents,
         ids=["id"+str(i) for i in range(len(documents))]
     )
+
+if __name__ == '__main__':
+    main()
