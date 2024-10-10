@@ -119,6 +119,8 @@ def create_value_object_schema(
         )
 
     elif fieldtype == "NumericalAggregations":
+        enums_list = []
+
         properties_value = (
             '"value": {'
                 '"type": "integer"'
@@ -175,7 +177,8 @@ def main():
             schema = {"schema": value_object_schema}
 
             documents.append(Document(page_content=description, metadata=schema))
-            documents.append(Document(page_content=repr(enums_list), metadata=schema))
+            if enums_list:
+                documents.append(Document(page_content=repr(enums_list), metadata=schema))
 
     embeddings = HuggingFaceEmbeddings(
         model_name='multi-qa-mpnet-base-cos-v1',
