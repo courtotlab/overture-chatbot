@@ -27,6 +27,31 @@ param_create_value_object_schema = [
             ]
         )
     ),
+    # change fieldname
+    (
+        'analysis__sample_collection__sample_collected_by',
+        'Aggregations',
+        None,
+        [
+            'Female', 'Male', 'Not Provided', 'Restricted Access',
+            'Missing', 'Unknown', 'Undeclared'
+        ],
+        (
+            (
+                '{"type": "object", "required": ["value"], "properties": {"fieldName": {"const": '
+                '"analysis.sample_collection.sample_collected_by", "type": "string", '
+                '"description": "analysis sample collection sample collected by"}, "value": '
+                '{"type": "array", "items": {"enum": ["Female", "Male", "Not Provided", '
+                '"Restricted Access", "Missing", "Unknown", "Undeclared"'
+                '], "type": "string"}, "minItems": 1}}}'
+            ),
+            'analysis sample collection sample collected by',
+            [
+                'Female', 'Male', 'Not Provided', 'Restricted Access', 
+                'Missing', 'Unknown', 'Undeclared'
+            ]
+        )
+    ),
     # add description to baseline
     (
         'analysis__host__host_gender',
