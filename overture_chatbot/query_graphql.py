@@ -90,7 +90,7 @@ def query_total_summary_chain():
         answer_chain = answer_prompt | llm
 
         return answer_chain
-    
+
     query_schema_chain = create_sqon_schema() | format_sqon_filters
 
     answer_chain = (
@@ -103,79 +103,65 @@ def query_total_summary_chain():
 
     return answer_chain
 
-def format_sqon_filters(sqon_filters):
-    """Format string into SQON format
-
-    String from LLM may need to be slightly modified to be used 
-    in a GraphQL query (i.e. single vs double quotes).
-
-    Parameters
-    ----------
-    sqon_filters : str
-        Raw Serializable Query Object Notation (SQON) 
-        that need to be modified.
+def create_sqon_schema():
+    """Create a Langchain LCEL chain that creates SQON prompt from unstructured text
 
     Returns
     -------
-    str
-        String representation of SQON with quotes modified.
+    langchain_core.runnables.base.RunnableSequence
+        Langchain chain that creates SQON prompt from unstructured text.
+
+    See Also
+    --------
+    query_total_summary_chain
+    query_total_chain
     """
-    modified_filters = sqon_filters.replace("'", '"')
-    for sqon_keyword in ['fieldName', 'value', 'op', 'content']:
-        modified_filters = modified_filters.replace(
-            '"'+sqon_keyword+'"', sqon_keyword
-        )
+    sqon_prompt = """
+        You are a structured output bot. Your task is to take a query and format it into the following JSON schema:
 
-    return modified_filters
+        {schema}
 
-def query_graphql(sqon_filters):
-    """Query GraphQL endpoint with SQON filters
+        Make sure to check for common mistakes, including:
+        - Respect the 'maxItems' and 'minItems' value
+        - Only include the value if it is in the list following the "enum" keyward.
 
-    Parameters
-    ----------
-    sqon_filters : str
-        Representation of Serializable Query Object Notation (SQON) 
-        filters that are passed to the GraphQL query
+        You must response with the single line JSON object without explaination or notes.
 
-    Returns
-    -------
-    JSON as str
-        Response from GraphQL query
+        ###
+        Here are some examples:
 
-    Notes
-    -----
-    Information about SQON filter notation can be found at Overtures website 
-    (https://www.overture.bio/documentation/arranger/reference/sqon/)
-    
+        Query: Filter for males in the database
+        Response: {{'op': 'and', 'content': [{{'op': 'in', 'content': {{'fieldName': 'analysis.host.host_gender', 'value': ['Male']}}}}]}}
+        Query: Get the number of samples who are not men
+        Response: {{'op': 'not', 'content': [{{'op': 'in', 'content': {{'fieldName': 'analysis.host.host_gender', 'value': ['Male']}}}}]}}
+        Query: Find the number of samples in Labrador not collected from men
+        Response: {{'op': 'and', 'content': [{{'op': 'in', 'content': {{'fieldName': 'analysis.sample_collection.sample_collected_by', 'value': ['Newfoundland and Labrador - Eastern Health']}}}}, {{'op': 'not', 'content': [{{'op': 'in', 'content': {{'fieldName': 'analysis.host.host_gender', 'value': ['Male']}}}}]}}]}}
+        Query: Get all samples published after 1640926800000
+        Response: {{"op": "and", "content": [{{"op": ">=", "content": {{"fieldName": "analysis.first_published_at", "value": 1640926800000}}}}]}}
+        ###
+
+        <<<
+        Query: {query}
+        >>>
     """
 
-    graphql_query = f"{{file{{hits(filters:{sqon_filters}){{total}}}}}}"
-
-    graphql = GraphQLAPIWrapper(
-        graphql_endpoint="https://arranger.virusseq-dataportal.ca/graphql"
+    sqon_prompt = PromptTemplate(
+        template=sqon_prompt,
+        input_variables=["schema", "query"]
     )
-    response = graphql.run(query=graphql_query)
 
-    return response
+    sqon_schema_chain = get_keyword_chain() | get_sqon_keyword | format_sqons_schema
 
-def get_total_graphql(sqon_filters):
-    """Get the total number of records in Arranger (via GraphQL) based on the SQON filters
+    sqon_chain = (
+        {
+            "schema": sqon_schema_chain,
+            "query": RunnablePassthrough()
+        }
+        | sqon_prompt
+        | llm
+    )
 
-    Parameters
-    ----------
-    sqon_filters : str
-        Representation of Serializable Query Object Notation (SQON) 
-        filters that are passed to the GraphQL query.
-
-    Returns
-    -------
-    str of integer
-        Total number of records in Arranger database that correspond to SQON filters.
-    """
-    json_response = query_graphql(sqon_filters)
-    total = json.loads(json_response)['file']['hits']['total']
-
-    return str(total)
+    return sqon_chain
 
 def get_keyword_chain():
     """Create a Langchain LCEL chain that returns keywords extracted from unstructured text
@@ -293,62 +279,76 @@ def format_sqons_schema(sqons):
 
     return sqon_json
 
-def create_sqon_schema():
-    """Create a Langchain LCEL chain that creates SQON prompt from unstructured text
+def format_sqon_filters(sqon_filters):
+    """Format string into SQON format
+
+    String from LLM may need to be slightly modified to be used 
+    in a GraphQL query (i.e. single vs double quotes).
+
+    Parameters
+    ----------
+    sqon_filters : str
+        Raw Serializable Query Object Notation (SQON) 
+        that need to be modified.
 
     Returns
     -------
-    langchain_core.runnables.base.RunnableSequence
-        Langchain chain that creates SQON prompt from unstructured text.
-
-    See Also
-    --------
-    query_total_summary_chain
-    query_total_chain
+    str
+        String representation of SQON with quotes modified.
     """
-    sqon_prompt = """
-        You are a structured output bot. Your task is to take a query and format it into the following JSON schema:
+    modified_filters = sqon_filters.replace("'", '"')
+    for sqon_keyword in ['fieldName', 'value', 'op', 'content']:
+        modified_filters = modified_filters.replace(
+            '"'+sqon_keyword+'"', sqon_keyword
+        )
 
-        {schema}
+    return modified_filters
 
-        Make sure to check for common mistakes, including:
-        - Respect the 'maxItems' and 'minItems' value
-        - Only include the value if it is in the list following the "enum" keyward.
+def get_total_graphql(sqon_filters):
+    """Get the total number of records in Arranger (via GraphQL) based on the SQON filters
 
-        You must response with the single line JSON object without explaination or notes.
+    Parameters
+    ----------
+    sqon_filters : str
+        Representation of Serializable Query Object Notation (SQON) 
+        filters that are passed to the GraphQL query.
 
-        ###
-        Here are some examples:
+    Returns
+    -------
+    str of integer
+        Total number of records in Arranger database that correspond to SQON filters.
+    """
+    json_response = query_graphql(sqon_filters)
+    total = json.loads(json_response)['file']['hits']['total']
 
-        Query: Filter for males in the database
-        Response: {{'op': 'and', 'content': [{{'op': 'in', 'content': {{'fieldName': 'analysis.host.host_gender', 'value': ['Male']}}}}]}}
-        Query: Get the number of samples who are not men
-        Response: {{'op': 'not', 'content': [{{'op': 'in', 'content': {{'fieldName': 'analysis.host.host_gender', 'value': ['Male']}}}}]}}
-        Query: Find the number of samples in Labrador not collected from men
-        Response: {{'op': 'and', 'content': [{{'op': 'in', 'content': {{'fieldName': 'analysis.sample_collection.sample_collected_by', 'value': ['Newfoundland and Labrador - Eastern Health']}}}}, {{'op': 'not', 'content': [{{'op': 'in', 'content': {{'fieldName': 'analysis.host.host_gender', 'value': ['Male']}}}}]}}]}}
-        Query: Get all samples published after 1640926800000
-        Response: {{"op": "and", "content": [{{"op": ">=", "content": {{"fieldName": "analysis.first_published_at", "value": 1640926800000}}}}]}}
-        ###
+    return str(total)
 
-        <<<
-        Query: {query}
-        >>>
+def query_graphql(sqon_filters):
+    """Query GraphQL endpoint with SQON filters
+
+    Parameters
+    ----------
+    sqon_filters : str
+        Representation of Serializable Query Object Notation (SQON) 
+        filters that are passed to the GraphQL query
+
+    Returns
+    -------
+    JSON as str
+        Response from GraphQL query
+
+    Notes
+    -----
+    Information about SQON filter notation can be found at Overtures website 
+    (https://www.overture.bio/documentation/arranger/reference/sqon/)
+    
     """
 
-    sqon_prompt = PromptTemplate(
-        template=sqon_prompt,
-        input_variables=["schema", "query"]
+    graphql_query = f"{{file{{hits(filters:{sqon_filters}){{total}}}}}}"
+
+    graphql = GraphQLAPIWrapper(
+        graphql_endpoint="https://arranger.virusseq-dataportal.ca/graphql"
     )
+    response = graphql.run(query=graphql_query)
 
-    sqon_schema_chain = get_keyword_chain() | get_sqon_keyword | format_sqons_schema
-
-    sqon_chain = (
-        {
-            "schema": sqon_schema_chain,
-            "query": RunnablePassthrough()
-        }
-        | sqon_prompt
-        | llm
-    )
-
-    return sqon_chain
+    return response
