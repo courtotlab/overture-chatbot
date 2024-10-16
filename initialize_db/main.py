@@ -1,3 +1,9 @@
+"""Initialize vector database
+
+This script is intended to be run once initially to initialize the vector database, 
+save the vector database locally, and download the associated embeddings (from HuggingFace).
+"""
+
 import json
 import requests
 from langchain_core.documents import Document
@@ -24,7 +30,6 @@ def main():
             )
 
             schema = {"schema": value_object_schema}
-
             documents.append(Document(page_content=description, metadata=schema))
             if enums_list:
                 documents.append(Document(page_content=repr(enums_list), metadata=schema))
