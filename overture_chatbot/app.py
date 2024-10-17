@@ -1,5 +1,4 @@
 import chainlit as cl
-from langchain.schema.runnable.config import RunnableConfig
 from query_graphql import query_total_chain
 
 @cl.on_chat_start
@@ -16,7 +15,6 @@ async def on_message(message: cl.Message):
 
     for chunk in await cl.make_async(runnable.stream)(
         {"query": message.content},
-        config=RunnableConfig(callbacks=[cl.LangchainCallbackHandler()]),
     ):
         await msg.stream_token(chunk)
 
