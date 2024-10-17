@@ -3,52 +3,27 @@
 import pytest
 import overture_chatbot.query_graphql
 
-param_format_sqon_filters = [
-    ('test', 'test'),
-    ("'test'", '"test"'),
-    ('"test"', '"test"'),
-    ("te'st", 'te"st'),
-    ('"fieldName"', 'fieldName'),
-    (' "fieldName" ', ' fieldName '),
-    ('"fieldName", "value"', 'fieldName, value')
+param_query_total_chain = [
+    (
+        'Find the number of males',
+        '207094'
+    )
 ]
 
 @pytest.mark.parametrize(
-    'sqon_filter_str_1, expected_format_sqon_filters_1', 
-    param_format_sqon_filters
+    'query_1, expected_result_1',
+    param_query_total_chain
 )
 
-def test_format_sqon_filters(
-    sqon_filter_str_1, expected_format_sqon_filters_1
+def test_query_total_chain(
+    query_1, expected_result_1
 ):
-    """Test for overture_chatbot.query_graphql.format_sqon_filters"""
-    actual_result = overture_chatbot.query_graphql.format_sqon_filters(sqon_filter_str_1)
+    """Test for overture_chatbot.query_graphql.query_total_chain"""
+    chain = overture_chatbot.query_graphql.query_total_chain()
+    actual_result = chain.invoke(query_1)
 
-    assert actual_result == expected_format_sqon_filters_1
+    assert actual_result == expected_result_1
 
-def test_get_total_graphql(monkeypatch):
-    """Test for overture_chatbot.query_graphql.get_total_graphql"""
-    sqon_filters = ''
-    expected_get_total_graphql = '100'
-
-    def mock_query_graphql(sqon_filters):
-        result = '{"file": {"hits": {"total": 100}}}'
-        return result
-    monkeypatch.setattr(overture_chatbot.query_graphql, 'query_graphql', mock_query_graphql)
-
-    actual_result = overture_chatbot.query_graphql.get_total_graphql(sqon_filters)
-
-    assert actual_result == expected_get_total_graphql
-
-def test_get_keyword_chain():
-    """Test for overture_chatbot.query_graphql.get_keyword_chain"""
-    query = 'Find the number of samples in Labrador not collected from men'
-    expected_get_keyword_chain = 'Labrador, men'
-
-    chain = overture_chatbot.query_graphql.get_keyword_chain()
-    actual_result = chain.invoke({'query': query})
-
-    assert actual_result == expected_get_keyword_chain
 
 def test_create_sqon_schema():
     """Test for overture_chatbot.query_graphql.create_sqon_schema"""
@@ -63,17 +38,17 @@ def test_create_sqon_schema():
 
     assert actual_result == expected_create_sqon_schema
 
-def test_query_graphql():
-    """Test for overture_chatbot.query_graphql.query_graphql"""
-    sqon_filter = (
-        '{op: "and", content: [{op: "in", content: '
-        '{fieldName: "analysis.host.host_gender", value: ["Male"]}}]}'
-    )
-    expected_query_graphql = '{\n  "file": {\n    "hits": {\n      "total": 207094\n    }\n  }\n}'
 
-    actual_result = overture_chatbot.query_graphql.query_graphql(sqon_filter)
+def test_get_keyword_chain():
+    """Test for overture_chatbot.query_graphql.get_keyword_chain"""
+    query = 'Find the number of samples in Labrador not collected from men'
+    expected_get_keyword_chain = 'Labrador, men'
 
-    assert actual_result == expected_query_graphql
+    chain = overture_chatbot.query_graphql.get_keyword_chain()
+    actual_result = chain.invoke({'query': query})
+
+    assert actual_result == expected_get_keyword_chain
+
 
 param_format_sqon_schema = [
     (
@@ -143,23 +118,54 @@ def test_format_sqons_schema(
 
     assert actual_result == expected_sqons_schema_2
 
-param_query_total_chain = [
-    (
-        'Find the number of males',
-        '207094'
-    )
+
+param_format_sqon_filters = [
+    ('test', 'test'),
+    ("'test'", '"test"'),
+    ('"test"', '"test"'),
+    ("te'st", 'te"st'),
+    ('"fieldName"', 'fieldName'),
+    (' "fieldName" ', ' fieldName '),
+    ('"fieldName", "value"', 'fieldName, value')
 ]
 
 @pytest.mark.parametrize(
-    'query_3, expected_result_3',
-    param_query_total_chain
+    'sqon_filter_str_3, expected_format_sqon_filters_3', 
+    param_format_sqon_filters
 )
 
-def test_query_total_chain(
-    query_3, expected_result_3
+def test_format_sqon_filters(
+    sqon_filter_str_3, expected_format_sqon_filters_3
 ):
-    """Test for overture_chatbot.query_graphql.query_total_chain"""
-    chain = overture_chatbot.query_graphql.query_total_chain()
-    actual_result = chain.invoke(query_3)
+    """Test for overture_chatbot.query_graphql.format_sqon_filters"""
+    actual_result = overture_chatbot.query_graphql.format_sqon_filters(sqon_filter_str_3)
 
-    assert actual_result == expected_result_3
+    assert actual_result == expected_format_sqon_filters_3
+
+
+def test_get_total_graphql(monkeypatch):
+    """Test for overture_chatbot.query_graphql.get_total_graphql"""
+    sqon_filters = ''
+    expected_get_total_graphql = '100'
+
+    def mock_query_graphql(sqon_filters):
+        result = '{"file": {"hits": {"total": 100}}}'
+        return result
+    monkeypatch.setattr(overture_chatbot.query_graphql, 'query_graphql', mock_query_graphql)
+
+    actual_result = overture_chatbot.query_graphql.get_total_graphql(sqon_filters)
+
+    assert actual_result == expected_get_total_graphql
+
+
+def test_query_graphql():
+    """Test for overture_chatbot.query_graphql.query_graphql"""
+    sqon_filter = (
+        '{op: "and", content: [{op: "in", content: '
+        '{fieldName: "analysis.host.host_gender", value: ["Male"]}}]}'
+    )
+    expected_query_graphql = '{\n  "file": {\n    "hits": {\n      "total": 207094\n    }\n  }\n}'
+
+    actual_result = overture_chatbot.query_graphql.query_graphql(sqon_filter)
+
+    assert actual_result == expected_query_graphql
