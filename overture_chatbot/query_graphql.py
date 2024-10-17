@@ -1,3 +1,9 @@
+"""Querying GraphQL API with LLMs
+
+Functions associated with querying GraphQL APIs with LLMs.
+Module is intended to be imported by a GUI.  
+"""
+
 import json
 from operator import itemgetter
 from langchain_community.utilities.graphql import GraphQLAPIWrapper
