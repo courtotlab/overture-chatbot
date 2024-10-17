@@ -1,3 +1,5 @@
+"""Chainlit GUI for chatbot"""
+
 import chainlit as cl
 from query_graphql import query_total_chain
 
