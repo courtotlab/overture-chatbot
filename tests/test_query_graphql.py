@@ -6,7 +6,7 @@ import overture_chatbot.query_graphql
 param_query_total_chain = [
     (
         'Find the number of males',
-        '207094'
+        '207571'
     )
 ]
 
@@ -164,7 +164,7 @@ def test_query_graphql():
         '{op: "and", content: [{op: "in", content: '
         '{fieldName: "analysis.host.host_gender", value: ["Male"]}}]}'
     )
-    expected_query_graphql = '{\n  "file": {\n    "hits": {\n      "total": 207094\n    }\n  }\n}'
+    expected_query_graphql = '{\n  "file": {\n    "hits": {\n      "total": 207571\n    }\n  }\n}'
 
     actual_result = overture_chatbot.query_graphql.query_graphql(sqon_filter)
 
