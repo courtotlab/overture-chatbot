@@ -1,4 +1,18 @@
+networks:
+  net:
+    driver: bridge
 services:
+  chromadb:
+    image: chromadb/chroma:0.5.13
+    volumes:
+      - ./resources/chroma:/chroma/chroma
+    environment:
+      - IS_PERSISTENT=TRUE
+      - PERSIST_DIRECTORY=/chroma/chroma
+    ports:
+      - 8000:8000
+    networks:
+      - net
   ollama-container:
     image: ollama/ollama
     volumes:
