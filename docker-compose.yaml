@@ -2,7 +2,7 @@ networks:
   net:
     driver: bridge
 services:
-  chromadb:
+  chroma-db:
     image: chromadb/chroma:0.5.13
     volumes:
       - ./resources/chroma:/chroma/chroma
@@ -13,7 +13,7 @@ services:
       - 8000:8000
     networks:
       - net
-  ollama-container:
+  ollama-llm:
     image: ollama/ollama
     volumes:
       - ./resources/ollama:/root/.ollama
@@ -24,5 +24,5 @@ services:
     volumes:
       - ./resources/huggingface:/root/huggingface
     depends_on:
-      - ollama-container
-      - chromadb
+      - ollama-llm
+      - chroma-db

@@ -14,7 +14,7 @@ from langchain_huggingface import HuggingFaceEmbeddings
 def main():
 
     # download LLM
-    client = Client(host='http://ollama-container:11434')
+    client = Client(host='http://ollama-llm:11434')
     client.pull('mistral-nemo')
 
     # store information to put into vector database
