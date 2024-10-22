@@ -17,45 +17,45 @@ def main():
     client = Client(host='http://ollama-container:11434')
     client.pull('mistral-nemo')
 
-    # # store information to put into vector database
-    # documents =[]
+    # store information to put into vector database
+    documents =[]
 
-    # fieldinfos = get_fieldinfos()
+    fieldinfos = get_fieldinfos()
 
-    # for fieldinfo in fieldinfos:
-    #     fieldname = fieldinfo['fieldname']
-    #     fieldtype = fieldinfo['fieldtype']
+    for fieldinfo in fieldinfos:
+        fieldname = fieldinfo['fieldname']
+        fieldtype = fieldinfo['fieldtype']
 
-    #     json_query = "query{file{aggregations(include_missing:true){"+fieldname+"{buckets{key}}}}}"
-    #     json_response = call_graphql_api(json_query)
+        json_query = "query{file{aggregations(include_missing:true){"+fieldname+"{buckets{key}}}}}"
+        json_response = call_graphql_api(json_query)
 
-    #     if 'errors' not in json_response:
-    #         value_object_schema, description, enums_list = create_value_object_schema(
-    #             fieldname=fieldname,fieldtype=fieldtype
-    #         )
+        if 'errors' not in json_response:
+            value_object_schema, description, enums_list = create_value_object_schema(
+                fieldname=fieldname,fieldtype=fieldtype
+            )
 
-    #         schema = {"schema": value_object_schema}
-    #         documents.append(Document(page_content=description, metadata=schema))
-    #         if enums_list:
-    #             documents.append(Document(page_content=repr(enums_list), metadata=schema))
+            schema = {"schema": value_object_schema}
+            documents.append(Document(page_content=description, metadata=schema))
+            if enums_list:
+                documents.append(Document(page_content=repr(enums_list), metadata=schema))
 
-    # embeddings = HuggingFaceEmbeddings(
-    #     model_name='multi-qa-mpnet-base-cos-v1',
-    #     cache_folder='../resources/huggingface'
-    # )
+    embeddings = HuggingFaceEmbeddings(
+        model_name='multi-qa-mpnet-base-cos-v1',
+        cache_folder='../resources/huggingface'
+    )
 
-    # # create connection to vector database
-    # vector_store = Chroma(
-    #     collection_name='overture',
-    #     embedding_function=embeddings,
-    #     persist_directory='../resources/chroma'
-    # )
+    # create connection to vector database
+    vector_store = Chroma(
+        collection_name='overture',
+        embedding_function=embeddings,
+        persist_directory='../resources/chroma'
+    )
 
-    # # add data to database
-    # vector_store.add_documents(
-    #     documents=documents,
-    #     ids=["id"+str(i) for i in range(len(documents))]
-    # )
+    # add data to database
+    vector_store.add_documents(
+        documents=documents,
+        ids=["id"+str(i) for i in range(len(documents))]
+    )
 
 def create_value_object_schema(
     fieldname, fieldtype, description = None
