@@ -6,51 +6,56 @@ save the vector database locally, and download the associated embeddings (from H
 
 import json
 import requests
+from ollama import Client
 from langchain_core.documents import Document
 from langchain_chroma import Chroma
 from langchain_huggingface import HuggingFaceEmbeddings
 
 def main():
 
-    # store information to put into vector database
-    documents =[]
+    # download LLM
+    client = Client(host='http://ollama-container:11434')
+    client.pull('mistral-nemo')
 
-    fieldinfos = get_fieldinfos()
+    # # store information to put into vector database
+    # documents =[]
 
-    for fieldinfo in fieldinfos:
-        fieldname = fieldinfo['fieldname']
-        fieldtype = fieldinfo['fieldtype']
+    # fieldinfos = get_fieldinfos()
 
-        json_query = "query{file{aggregations(include_missing:true){"+fieldname+"{buckets{key}}}}}"
-        json_response = call_graphql_api(json_query)
+    # for fieldinfo in fieldinfos:
+    #     fieldname = fieldinfo['fieldname']
+    #     fieldtype = fieldinfo['fieldtype']
 
-        if 'errors' not in json_response:
-            value_object_schema, description, enums_list = create_value_object_schema(
-                fieldname=fieldname,fieldtype=fieldtype
-            )
+    #     json_query = "query{file{aggregations(include_missing:true){"+fieldname+"{buckets{key}}}}}"
+    #     json_response = call_graphql_api(json_query)
 
-            schema = {"schema": value_object_schema}
-            documents.append(Document(page_content=description, metadata=schema))
-            if enums_list:
-                documents.append(Document(page_content=repr(enums_list), metadata=schema))
+    #     if 'errors' not in json_response:
+    #         value_object_schema, description, enums_list = create_value_object_schema(
+    #             fieldname=fieldname,fieldtype=fieldtype
+    #         )
 
-    embeddings = HuggingFaceEmbeddings(
-        model_name='multi-qa-mpnet-base-cos-v1',
-        cache_folder='../resources/huggingface'
-    )
+    #         schema = {"schema": value_object_schema}
+    #         documents.append(Document(page_content=description, metadata=schema))
+    #         if enums_list:
+    #             documents.append(Document(page_content=repr(enums_list), metadata=schema))
 
-    # create connection to vector database
-    vector_store = Chroma(
-        collection_name='overture',
-        embedding_function=embeddings,
-        persist_directory='../resources/chroma'
-    )
+    # embeddings = HuggingFaceEmbeddings(
+    #     model_name='multi-qa-mpnet-base-cos-v1',
+    #     cache_folder='../resources/huggingface'
+    # )
 
-    # add data to database
-    vector_store.add_documents(
-        documents=documents,
-        ids=["id"+str(i) for i in range(len(documents))]
-    )
+    # # create connection to vector database
+    # vector_store = Chroma(
+    #     collection_name='overture',
+    #     embedding_function=embeddings,
+    #     persist_directory='../resources/chroma'
+    # )
+
+    # # add data to database
+    # vector_store.add_documents(
+    #     documents=documents,
+    #     ids=["id"+str(i) for i in range(len(documents))]
+    # )
 
 def create_value_object_schema(
     fieldname, fieldtype, description = None

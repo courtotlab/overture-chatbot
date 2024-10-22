@@ -19,3 +19,10 @@ services:
       - ./resources/ollama:/root/.ollama
     ports:
       - 11434:11434
+  chainlit:
+    build: .
+    volumes:
+      - ./resources/huggingface:/root/huggingface
+    depends_on:
+      - ollama-container
+      - chromadb

@@ -4,8 +4,8 @@ FROM python:3.12
 WORKDIR /code
 
 COPY requirements.txt ./
-COPY initialize_db/main.py ./initialize_db
-COPY overture_chatbot/* ./overture_chatbot
+COPY initialize_db ./initialize_db
+COPY overture_chatbot ./overture_chatbot
 COPY run.sh ./
 
 RUN pip install --upgrade pip
