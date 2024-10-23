@@ -8,8 +8,11 @@ COPY initialize_db ./initialize_db
 COPY overture_chatbot ./overture_chatbot
 COPY run.sh ./
 
+RUN mkdir -p ./resources/huggingface
+
 RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
+
 # grant permission
 RUN chmod +x run.sh
 

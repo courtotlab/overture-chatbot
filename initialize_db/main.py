@@ -41,7 +41,7 @@ def main():
 
     embeddings = HuggingFaceEmbeddings(
         model_name='multi-qa-mpnet-base-cos-v1',
-        cache_folder='../resources/huggingface'
+        cache_folder='resources/huggingface'
     )
 
     # create connection to vector database

@@ -22,7 +22,7 @@ services:
   chainlit:
     build: .
     volumes:
-      - ./resources/huggingface:/root/huggingface
+      - ./resources/huggingface:/code/resources/huggingface
     depends_on:
       - ollama-llm
       - chroma-db
