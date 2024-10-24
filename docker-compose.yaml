@@ -13,12 +13,16 @@ services:
       - 8000:8000
     networks:
       - net
+  
   ollama-llm:
     image: ollama/ollama
     volumes:
       - ./resources/ollama:/root/.ollama
     ports:
       - 11434:11434
+    networks:
+      - net
+
   chainlit:
     build: .
     volumes:
@@ -26,3 +30,5 @@ services:
     depends_on:
       - ollama-llm
       - chroma-db
+    networks:
+      - net
