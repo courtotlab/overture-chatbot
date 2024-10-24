@@ -7,6 +7,8 @@ save the vector database locally, and download the associated embeddings (from H
 import json
 import requests
 from ollama import Client
+import chromadb
+from chromadb.config import Settings
 from langchain_core.documents import Document
 from langchain_chroma import Chroma
 from langchain_huggingface import HuggingFaceEmbeddings
@@ -16,6 +18,10 @@ def main():
     # download LLM
     client = Client(host='http://ollama-llm:11434')
     client.pull('mistral-nemo')
+
+    chroma_client = chromadb.HttpClient(
+        host='chroma-db', port=8000, settings=Settings(allow_reset=True, anonymized_telemetry=False)
+    )
 
     # store information to put into vector database
     documents =[]
@@ -48,7 +54,7 @@ def main():
     vector_store = Chroma(
         collection_name='overture',
         embedding_function=embeddings,
-        persist_directory='../resources/chroma'
+        client=chroma_client
     )
 
     # add data to database
