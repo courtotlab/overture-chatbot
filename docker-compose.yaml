@@ -1,6 +1,8 @@
 services:
   chroma-db:
-    image: chromadb/chroma:0.5.13
+    # bug with latest (v 0.5.13)
+    # https://github.com/vanna-ai/vanna/issues/664
+    image: chromadb/chroma:0.5.5
     volumes:
       - ./resources/chroma:/chroma/chroma
     environment:
@@ -18,7 +20,7 @@ services:
       timeout: 10s
   
   ollama-llm:
-    image: ollama/ollama
+    image: ollama/ollama:0.3.14
     volumes:
       - ./resources/ollama:/root/.ollama
     ports:
