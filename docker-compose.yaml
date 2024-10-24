@@ -1,6 +1,3 @@
-networks:
-  net:
-    driver: bridge
 services:
   chroma-db:
     image: chromadb/chroma:0.5.13
@@ -13,6 +10,12 @@ services:
       - 8000:8000
     networks:
       - net
+    healthcheck: 
+      test: curl localhost:8000/api/v1/heartbeat || exit 1
+      interval: 10s
+      retries: 2
+      start_period: 5s
+      timeout: 10s
   
   ollama-llm:
     image: ollama/ollama
@@ -28,7 +31,13 @@ services:
     volumes:
       - ./resources/huggingface:/code/resources/huggingface
     depends_on:
-      - ollama-llm
-      - chroma-db
+      ollama-llm:
+        condition: service_started
+      chroma-db:
+          condition: service_healthy
     networks:
       - net
+
+networks:
+  net:
+    driver: bridge
