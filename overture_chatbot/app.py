@@ -5,7 +5,7 @@ from query_graphql import query_total_chain
 
 @cl.on_chat_start
 async def on_chat_start():
-    """Chainlit hook that excecutes on start of chat"""
+    """Chainlit hook that executes on start of chat"""
     await cl.Message(content="Welcome to the Overture Chatbot!").send()
     langchain_chain = query_total_chain()
     cl.user_session.set("runnable", langchain_chain)
