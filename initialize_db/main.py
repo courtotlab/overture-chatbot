@@ -173,6 +173,7 @@ def get_fieldinfos():
     return fieldsinfo
 
 def call_graphql_api(
+    # TODO: abstract this value into an EnvVar
     json_query, url='https://arranger.virusseq-dataportal.ca/graphql'
 ):
     """Create a GraphQL call and return the result
