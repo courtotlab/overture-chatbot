@@ -12,7 +12,7 @@ async def on_chat_start():
 
 @cl.on_message
 async def on_message(message: cl.Message):
-    """Chainlit hook that excecutes after every message"""
+    """Chainlit hook that executes after every message"""
     runnable = cl.user_session.get("runnable")
 
     msg = cl.Message(content="")
