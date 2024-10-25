@@ -16,4 +16,5 @@ RUN pip install -r requirements.txt
 # grant permission
 RUN chmod +x run.sh
 
+EXPOSE 5000
 CMD ["./run.sh"]
