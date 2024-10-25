@@ -34,7 +34,11 @@ def main():
             fieldname = fieldinfo['fieldname']
             fieldtype = fieldinfo['fieldtype']
 
-            json_query = "query{file{aggregations(include_missing:true){"+fieldname+"{buckets{key}}}}}"
+            json_query = (
+                "query{file{aggregations(include_missing:true){"
+                +fieldname
+                +"{buckets{key}}}}}"
+            )
             json_response = call_graphql_api(json_query)
 
             if 'errors' not in json_response:
