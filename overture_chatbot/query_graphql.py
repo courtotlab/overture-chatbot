@@ -6,6 +6,8 @@ Module is intended to be imported by a GUI.
 
 import json
 from operator import itemgetter
+import chromadb
+from chromadb.config import Settings
 from langchain_community.utilities.graphql import GraphQLAPIWrapper
 from langchain_ollama import OllamaLLM
 from langchain_core.prompts import PromptTemplate
@@ -14,17 +16,20 @@ from langchain_core.runnables import RunnablePassthrough, RunnableLambda
 from langchain_chroma import Chroma
 from langchain_huggingface import HuggingFaceEmbeddings
 
-llm = OllamaLLM(model="mistral-nemo", temperature=0)
+llm = OllamaLLM(base_url='http://ollama-llm:11434', model='mistral-nemo', temperature=0)
 embeddings = HuggingFaceEmbeddings(
-        model_name='multi-qa-mpnet-base-cos-v1',
-        cache_folder='../resources/huggingface'
-    )
+    model_name='multi-qa-mpnet-base-cos-v1',
+    cache_folder='resources/huggingface'
+)
 
 # vector database containing the filtering SQONs
+chroma_client = chromadb.HttpClient(
+        host='chroma-db', port=8000, settings=Settings(allow_reset=True, anonymized_telemetry=False)
+    )
 vector_store = Chroma(
     collection_name="overture",
     embedding_function=embeddings,
-    persist_directory='../resources/chroma'
+    client=chroma_client
 )
 
 def query_total_chain():
