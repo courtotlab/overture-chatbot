@@ -135,6 +135,7 @@ def create_sqon_schema():
         Make sure to check for common mistakes, including:
         - Respect the 'maxItems' and 'minItems' value
         - Only include the value if it is in the list following the "enum" keyward.
+        - The number of open brackets should equal the number of close brackets
 
         You must response with the single line JSON object without explaination or notes.
 
