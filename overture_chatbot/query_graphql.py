@@ -359,6 +359,7 @@ def query_graphql(sqon_filters):
     graphql_query = f"{{file{{hits(filters:{sqon_filters}){{total}}}}}}"
 
     graphql = GraphQLAPIWrapper(
+        # TODO: abstract this value into an EnvVar
         graphql_endpoint="https://arranger.virusseq-dataportal.ca/graphql"
     )
     response = graphql.run(query=graphql_query)
