@@ -17,7 +17,7 @@ def main():
 
     # download LLM
     client = Client(host='http://ollama-llm:11434')
-    client.pull('mistral-nemo')
+    client.pull('mistral')
 
     chroma_client = chromadb.HttpClient(
         host='chroma-db', port=8000, settings=Settings(allow_reset=True, anonymized_telemetry=False)

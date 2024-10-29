@@ -16,7 +16,7 @@ from langchain_core.runnables import RunnablePassthrough, RunnableLambda
 from langchain_chroma import Chroma
 from langchain_huggingface import HuggingFaceEmbeddings
 
-llm = OllamaLLM(base_url='http://ollama-llm:11434', model='mistral-nemo', temperature=0)
+llm = OllamaLLM(base_url='http://ollama-llm:11434', model='mistral', temperature=0)
 embeddings = HuggingFaceEmbeddings(
     model_name='multi-qa-mpnet-base-cos-v1',
     cache_folder='resources/huggingface'
