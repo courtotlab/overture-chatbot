@@ -79,8 +79,11 @@ def create_value_object_schema(
 
     if fieldtype == "Aggregations":
         enums_list = get_enums(fieldname)
-        mod_enums_list = repr(enums_list).replace("'", '"')
-
+        mod_enums_list = '['
+        for enum in enums_list:
+            mod_enums_list = mod_enums_list + '"' + enum.replace('"', '\\"') + '", '
+        mod_enums_list = mod_enums_list[:-2] + ']'
+        
         properties_value = (
             '"value": {'
                 '"type": "array", '
