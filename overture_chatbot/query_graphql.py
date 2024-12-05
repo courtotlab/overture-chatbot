@@ -15,6 +15,7 @@ from langchain_core.output_parsers import StrOutputParser
 from langchain_core.runnables import RunnablePassthrough, RunnableLambda
 from langchain_chroma import Chroma
 from langchain_huggingface import HuggingFaceEmbeddings
+from langchain_core.tools import tool
 
 llm = OllamaLLM(base_url='http://ollama-llm:11434', model='mistral', temperature=0)
 embeddings = HuggingFaceEmbeddings(
@@ -47,7 +48,15 @@ def query_total_chain():
     returns the number as a summary (i.e. There are 5 records that match your criteria 
     of X, Y, and Z).
     """
-    query_total = create_sqon_schema() | format_sqon_filters | get_total_graphql
+    
+    def try_except_total_graphql(args, config):
+        sqon = args[1:]
+        try:
+            return get_total_graphql.invoke(sqon, config=config)
+        except Exception as e:
+            return f"Calling tool with arguments:\n\n{sqon}\n\nraised the following error:\n\n{type(e)}: {e}"
+    
+    query_total = create_sqon_schema() | format_sqon_filters | try_except_total_graphql
 
     return query_total
 
@@ -316,6 +325,7 @@ def format_sqon_filters(sqon_filters):
 
     return modified_filters
 
+@tool
 def get_total_graphql(sqon_filters):
     """Get the total number of records in Arranger (via GraphQL) based on the SQON filters
 
