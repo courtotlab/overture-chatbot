@@ -136,7 +136,7 @@ def create_sqon_schema():
     query_total_summary_chain
     query_total_chain
     """
-    sqon_prompt = """
+    sqon_prompt_template = """
         You are a structured output bot. Your task is to take a query and format it into the following JSON schema:
 
         {schema}
@@ -167,7 +167,7 @@ def create_sqon_schema():
     """
 
     sqon_prompt = PromptTemplate(
-        template=sqon_prompt,
+        template=sqon_prompt_template,
         input_variables=["schema", "query"]
     )
 
@@ -192,7 +192,7 @@ def get_keyword_chain():
     langchain_core.runnables.base.RunnableSequence
         Langchain chain that will keywords extracted from unstructured text.
     """
-    keyword_prompt = """
+    keyword_prompt_template = """
         You are expert English linguist. Extract all the keywords from the given database query.
 
         Constraints: Limit the number of keywords to a maximum of five. Only include the list of keywords.
@@ -214,7 +214,7 @@ def get_keyword_chain():
     """
 
     prompt = PromptTemplate(
-        template=keyword_prompt,
+        template=keyword_prompt_template,
         input_variables=['query']
     )
     chain = prompt | llm
