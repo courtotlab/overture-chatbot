@@ -2,7 +2,7 @@
 ## Project Organization Summary
     ├── docker-compose.yaml
     ├── Dockerfile
-    ├── LICENSE.txt
+    ├── LICENSE
     ├── README.md
     ├── requirements.txt
     ├── run.sh
