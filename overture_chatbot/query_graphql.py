@@ -13,6 +13,7 @@ from langchain_ollama import OllamaLLM
 from langchain_core.prompts import PromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.runnables import RunnablePassthrough, RunnableLambda
+from langchain_core.runnables import RunnableSequence, Runnable, RunnableConfig
 from langchain_chroma import Chroma
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_core.tools import tool
@@ -33,7 +34,7 @@ vector_store = Chroma(
     client=chroma_client
 )
 
-def query_total_chain():
+def query_total_chain() ->  RunnableSequence:
     """Create a Langchain LCEL chain that returns the total number of records from unstructured text
 
     Returns
@@ -49,7 +50,13 @@ def query_total_chain():
     of X, Y, and Z).
     """
     
-    def try_except_total_graphql(args, config):
+    def try_except_total_graphql(args: str, config: RunnableConfig) -> Runnable:
+        """Try/except for get_total_graphql
+
+        Reference
+        ---------
+        https://python.langchain.com/docs/how_to/tools_error/#tryexcept-tool-call
+        """
         sqon = args[1:]
         try:
             return get_total_graphql.invoke(sqon, config=config)
@@ -60,7 +67,7 @@ def query_total_chain():
 
     return query_total
 
-def query_total_summary_chain():
+def query_total_summary_chain() -> RunnableSequence:
     """Create a Langchain LCEL chain that summarizes total number of records from unstructured text
 
     Returns
@@ -75,7 +82,7 @@ def query_total_summary_chain():
     returns the number as a summary (i.e. There are 5 records that match your criteria 
     of X, Y, and Z).
     """
-    def summarize_answer():
+    def summarize_answer() -> RunnableSequence:
         """Create a Langchain LCEL chain that summarizes answer
 
         Chain will create a summary of the results given the query, query schema, and result.
@@ -123,7 +130,7 @@ def query_total_summary_chain():
 
     return answer_chain
 
-def create_sqon_schema():
+def create_sqon_schema() -> RunnableSequence:
     """Create a Langchain LCEL chain that creates SQON prompt from unstructured text
 
     Returns
@@ -184,7 +191,7 @@ def create_sqon_schema():
 
     return sqon_chain
 
-def get_keyword_chain():
+def get_keyword_chain() -> RunnableSequence:
     """Create a Langchain LCEL chain that returns keywords extracted from unstructured text
 
     Returns
@@ -221,7 +228,7 @@ def get_keyword_chain():
 
     return chain
 
-def get_sqon_keyword(keyword_str):
+def get_sqon_keyword(keyword_str: str) -> list[str]:
     """Get SQONs (as JSON) from a keyword
 
     Given a keyword, this function will query a vector store to retrieve 
@@ -255,7 +262,7 @@ def get_sqon_keyword(keyword_str):
 
     return sqons
 
-def format_sqons_schema(sqons):
+def format_sqons_schema(sqons: list[str]) -> str:
     """Integrate SQONs into JSON schema
 
     Parameters
@@ -300,7 +307,7 @@ def format_sqons_schema(sqons):
 
     return sqon_json
 
-def format_sqon_filters(sqon_filters):
+def format_sqon_filters(sqon_filters: str) -> str:
     """Format string into SQON format
 
     String from LLM may need to be slightly modified to be used 
@@ -326,7 +333,7 @@ def format_sqon_filters(sqon_filters):
     return modified_filters
 
 @tool
-def get_total_graphql(sqon_filters):
+def get_total_graphql(sqon_filters: str) -> str:
     """Get the total number of records in Arranger (via GraphQL) based on the SQON filters
 
     Parameters
@@ -345,7 +352,7 @@ def get_total_graphql(sqon_filters):
 
     return str(total)
 
-def query_graphql(sqon_filters):
+def query_graphql(sqon_filters: str) -> str:
     """Query GraphQL endpoint with SQON filters
 
     Parameters
