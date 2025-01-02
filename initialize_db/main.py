@@ -70,8 +70,8 @@ def main():
         )
 
 def create_value_object_schema(
-    fieldname, fieldtype, description = None
-):
+    fieldname: str, fieldtype: str, description: str | None = None
+) -> tuple[str, str, list[str]]:
     """Create SQON value object and description of field name
 
     Parameters
@@ -149,7 +149,7 @@ def create_value_object_schema(
 
     return value_object, description, enums_list
 
-def get_enums(fieldname="analysis__host__host_gender"):
+def get_enums(fieldname: str = "analysis__host__host_gender") -> list[str]:
     """Get the enumerated data from a field using GraphQL
 
     Parameters
@@ -174,7 +174,7 @@ def get_enums(fieldname="analysis__host__host_gender"):
 
     return enums_list
 
-def get_fieldinfos():
+def get_fieldinfos() -> list[dict]:
     """Get field information (i.e. field type) of project using GraphQL
 
     Returns
@@ -194,8 +194,8 @@ def get_fieldinfos():
 
 def call_graphql_api(
     # TODO: abstract this value into an EnvVar
-    json_query, url='https://arranger.virusseq-dataportal.ca/graphql'
-):
+    json_query: str, url: str = 'https://arranger.virusseq-dataportal.ca/graphql'
+) -> str:
     """Create a GraphQL call and return the result
 
     Parameters
