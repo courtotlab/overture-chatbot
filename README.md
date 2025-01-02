@@ -43,4 +43,4 @@ Once the logs say “chainlit-1 … Your app is available at http://0.0.0.0:5000
 ## Roadmap
 - Improve accuracy using constrained output via [llama.cpp's grammar](https://github.com/ggerganov/llama.cpp/blob/master/grammars/README.md) or [Ollama's implementation](https://ollama.com/blog/structured-outputs)
 - Date related searches
-- Update testing suite to incorporate virtualization
+- Update testing suite to incorporate container
