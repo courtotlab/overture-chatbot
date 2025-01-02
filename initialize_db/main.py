@@ -4,6 +4,7 @@ This script is intended to be run once initially to initialize the vector databa
 save the vector database locally, and download the associated embeddings (from HuggingFace).
 """
 
+from typing import Literal
 import json
 import requests
 from ollama import Client
@@ -70,7 +71,7 @@ def main():
         )
 
 def create_value_object_schema(
-    fieldname: str, fieldtype: str, description: str | None = None
+    fieldname: str, fieldtype: Literal["Aggregations", "NumericalAggregations"], description: str | None = None
 ) -> tuple[str, str, list[str]]:
     """Create SQON value object and description of field name
 
