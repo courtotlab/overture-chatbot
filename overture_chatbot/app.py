@@ -7,19 +7,33 @@ from query_graphql import query_total_chain
 async def on_chat_start():
     """Chainlit hook that executes on start of chat"""
     await cl.Message(content="Welcome to the Overture Chatbot!").send()
-    langchain_chain = query_total_chain()
-    cl.user_session.set("runnable", langchain_chain)
+
+def invoke_query_total_chain(query):
+    """Creates a Langchain chain and invokes
+
+    Parameters
+    ----------
+    query : dict
+        Dictionary with "query" as a key and a custom query message
+
+    Returns
+    -------
+    str
+        Returns the result of the invoked chain
+    
+    See Also
+    --------
+    query_graphql.query_total_chain
+    """
+    chain = query_total_chain()
+    result = chain.invoke(query)
+
+    return result
 
 @cl.on_message
 async def on_message(message: cl.Message):
     """Chainlit hook that executes after every message"""
-    runnable = cl.user_session.get("runnable")
-
-    msg = cl.Message(content="")
-
-    for chunk in await cl.make_async(runnable.stream)(
-        {"query": message.content},
-    ):
-        await msg.stream_token(chunk)
-
-    await msg.send()
+    answer = await cl.make_async(invoke_query_total_chain)({"query": message.content})
+    await cl.Message(
+        content=answer,
+    ).send()

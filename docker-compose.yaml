@@ -1,0 +1,47 @@
+services:
+  chroma-db:
+    # bug with latest (v 0.5.13)
+    # https://github.com/vanna-ai/vanna/issues/664
+    image: chromadb/chroma:0.5.5
+    volumes:
+      - ./resources/chroma:/chroma/chroma
+    environment:
+      - IS_PERSISTENT=TRUE
+      - PERSIST_DIRECTORY=/chroma/chroma
+    ports:
+      - 8000:8000
+    networks:
+      - net
+    healthcheck: 
+      test: curl localhost:8000/api/v1/heartbeat || exit 1
+      interval: 10s
+      retries: 2
+      start_period: 5s
+      timeout: 10s
+  
+  ollama-llm:
+    image: ollama/ollama:0.3.14
+    volumes:
+      - ./resources/ollama:/root/.ollama
+    ports:
+      - 11434:11434
+    networks:
+      - net
+
+  chainlit:
+    build: .
+    volumes:
+      - ./resources/huggingface:/code/resources/huggingface
+    depends_on:
+      ollama-llm:
+        condition: service_started
+      chroma-db:
+          condition: service_healthy
+    ports:
+        - 5000:5000
+    networks:
+      - net
+
+networks:
+  net:
+    driver: bridge

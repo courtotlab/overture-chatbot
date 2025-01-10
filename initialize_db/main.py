@@ -4,57 +4,75 @@ This script is intended to be run once initially to initialize the vector databa
 save the vector database locally, and download the associated embeddings (from HuggingFace).
 """
 
+from typing import Literal
 import json
 import requests
+from ollama import Client
+import chromadb
+from chromadb.config import Settings
 from langchain_core.documents import Document
 from langchain_chroma import Chroma
 from langchain_huggingface import HuggingFaceEmbeddings
 
 def main():
 
-    # store information to put into vector database
-    documents =[]
+    # download LLM
+    client = Client(host='http://ollama-llm:11434')
+    client.pull('mistral')
 
-    fieldinfos = get_fieldinfos()
+    chroma_client = chromadb.HttpClient(
+        host='chroma-db', port=8000, settings=Settings(allow_reset=True, anonymized_telemetry=False)
+    )
 
-    for fieldinfo in fieldinfos:
-        fieldname = fieldinfo['fieldname']
-        fieldtype = fieldinfo['fieldtype']
+    # don't need to initialize Chroma DB if data is present
+    if chroma_client.count_collections() < 1:
+        # store information to put into vector database
+        documents =[]
 
-        json_query = "query{file{aggregations(include_missing:true){"+fieldname+"{buckets{key}}}}}"
-        json_response = call_graphql_api(json_query)
+        fieldinfos = get_fieldinfos()
 
-        if 'errors' not in json_response:
-            value_object_schema, description, enums_list = create_value_object_schema(
-                fieldname=fieldname,fieldtype=fieldtype
+        for fieldinfo in fieldinfos:
+            fieldname = fieldinfo['fieldname']
+            fieldtype = fieldinfo['fieldtype']
+
+            json_query = (
+                "query{file{aggregations(include_missing:true){"
+                +fieldname
+                +"{buckets{key}}}}}"
             )
+            json_response = call_graphql_api(json_query)
 
-            schema = {"schema": value_object_schema}
-            documents.append(Document(page_content=description, metadata=schema))
-            if enums_list:
-                documents.append(Document(page_content=repr(enums_list), metadata=schema))
+            if 'errors' not in json_response:
+                value_object_schema, description, enums_list = create_value_object_schema(
+                    fieldname=fieldname,fieldtype=fieldtype
+                )
 
-    embeddings = HuggingFaceEmbeddings(
-        model_name='multi-qa-mpnet-base-cos-v1',
-        cache_folder='../resources/huggingface'
-    )
+                schema = {"schema": value_object_schema}
+                documents.append(Document(page_content=description, metadata=schema))
+                if enums_list:
+                    documents.append(Document(page_content=repr(enums_list), metadata=schema))
 
-    # create connection to vector database
-    vector_store = Chroma(
-        collection_name='overture',
-        embedding_function=embeddings,
-        persist_directory='../resources/chroma'
-    )
+        embeddings = HuggingFaceEmbeddings(
+            model_name='multi-qa-mpnet-base-cos-v1',
+            cache_folder='resources/huggingface'
+        )
 
-    # add data to database
-    vector_store.add_documents(
-        documents=documents,
-        ids=["id"+str(i) for i in range(len(documents))]
-    )
+        # create connection to vector database
+        vector_store = Chroma(
+            collection_name='overture',
+            embedding_function=embeddings,
+            client=chroma_client
+        )
+
+        # add data to database
+        vector_store.add_documents(
+            documents=documents,
+            ids=["id"+str(i) for i in range(len(documents))]
+        )
 
 def create_value_object_schema(
-    fieldname, fieldtype, description = None
-):
+    fieldname: str, fieldtype: Literal["Aggregations", "NumericalAggregations"], description: str | None = None
+) -> tuple[str, str, list[str]]:
     """Create SQON value object and description of field name
 
     Parameters
@@ -132,7 +150,7 @@ def create_value_object_schema(
 
     return value_object, description, enums_list
 
-def get_enums(fieldname="analysis__host__host_gender"):
+def get_enums(fieldname: str = "analysis__host__host_gender") -> list[str]:
     """Get the enumerated data from a field using GraphQL
 
     Parameters
@@ -157,7 +175,7 @@ def get_enums(fieldname="analysis__host__host_gender"):
 
     return enums_list
 
-def get_fieldinfos():
+def get_fieldinfos() -> list[dict]:
     """Get field information (i.e. field type) of project using GraphQL
 
     Returns
@@ -177,8 +195,8 @@ def get_fieldinfos():
 
 def call_graphql_api(
     # TODO: abstract this value into an EnvVar
-    json_query, url='https://arranger.virusseq-dataportal.ca/graphql'
-):
+    json_query: str, url: str = 'https://arranger.virusseq-dataportal.ca/graphql'
+) -> str:
     """Create a GraphQL call and return the result
 
     Parameters
